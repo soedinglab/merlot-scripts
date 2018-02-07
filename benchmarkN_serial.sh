@@ -17,8 +17,10 @@ n=$5        # number of bifurcations
 # 3. benchmark predictions
 
 # how many datasets do we produce
-many=100
+many=10
 
+# create the benchmark directory
+mkdir "$out"
 # create the input file for parallel
 : > "$out/par_params"
 for ((i=0; i<"$many"; i++))
@@ -29,7 +31,7 @@ do
 done
 
 # unnecessary if simulations are present
-# parallel -j "$cores" --colsep " " --results "$out/" -a "$out/par_params" bash "$mscripts/run_simN.sh" "$mscripts" "{1}" "{2}" "$n"
+parallel -j "$cores" --colsep " " --results "$out/" -a "$out/par_params" bash "$mscripts/run_simN.sh" "$mscripts" "{1}" "{2}" "$n"
 parallel -j "$cores" --colsep " " --results "$out/" -a "$out/par_params" bash "$mscripts/run_as_one.sh" "$mscripts" "{1}" "{2}" "$n"
 
 # parse all scaffold trees and record the number of endpoints, branch points and branches
