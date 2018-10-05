@@ -53,7 +53,8 @@ option_list <- list(
   make_option(c("-j", "--job"), type = "character", help = "job name", metavar = "jobname"),
   make_option(c("-d", "--dimensions"), type = "integer", default = 2, help = "how many dimensions to use for the embedding [default = %default]", metavar = "INT"),
   make_option(c("-l", "--log"), action = "store_true", default = FALSE, help = "Toggle to log the expression matrix [default = %default]"),
-  make_option(c("-n", "--knn"), action = "store_true", default = FALSE, help = "Toggle to use a simple heuristic for choosing a k for diffusion maps. [default = %default]")
+  make_option(c("-n", "--knn"), action = "store_true", default = FALSE, help = "Toggle to use a simple heuristic for choosing a k for diffusion maps. [default = %default]"),
+  make_option(c("-s", "--select"), type="character", default = "none", help = "The <name> of a file with a subset of the dataset with only informative genes.")
 ); 
 
 opt_parser <- OptionParser(option_list = option_list);
@@ -64,22 +65,40 @@ JobName <- opt$job
 dimensions <- opt$dimensions
 knn <- opt$knn
 iflog <- opt$log
+select <- opt$select
 
-# JobFolder <- "/data/niko/repeat/benchmark10/test0/"
-# JobName <- "test0"
-# dimensions <- 11
+# JobFolder <- "/data/niko/test/benchmark1/splat0/"
+# JobName <- "splat0"
+# dimensions <- 2
 # knn <- TRUE
 # iflog <- TRUE
+# select <- "merlot"
 
 job <- paste(JobFolder, JobName, sep = "")
-raw <- read.table(file = paste(job, "simulation.txt", sep = "_"), sep = "\t", header = T, row.names = 1, stringsAsFactors = T)
+
+preselected <- FALSE
+sim_name <- ""
+if (select == "none") {
+  sim_name <- paste(job, "simulation.txt", sep = "_")
+} else {
+  preselected <- TRUE
+  sim_name <- paste(job, "_simulation_sel_", select, ".txt", sep = "")
+}
+# print(sim_name)
+
+raw <- read.table(file = sim_name, sep = "\t", header = T, row.names = 1, stringsAsFactors = T)
 data <- as.matrix(raw)
-sum1 <- apply(data, 1, sum)
-scalings <- sum1/mean(sum1)
-data = (1/scalings)*data
+
+if (!preselected) {
+  sum1 <- apply(data, 1, sum)
+  scalings <- sum1/mean(sum1)
+  data = (1/scalings)*data
+}
 
 if (iflog) {
-  data <- log(data+1)
+  if (select != "seurat") {data <- log(data+1)}
+} else {
+  if (select == "seurat") {data <- exp(data)-1}
 }
 
 if (knn) {
@@ -94,5 +113,10 @@ JobName <- paste(JobName, "destiny", sep = "_")
 if (iflog) {JobName <- paste(JobName, "_log", sep = "")}
 if (knn) {JobName <- paste(JobName, "_k", sep = "")}
 
-saveRDS(dif, file = paste(JobFolder, JobName, sep = ""))
+if (preselected) {
+  JobName <- paste(JobName, "sel", select, sep = "_")
+  saveRDS(dif, file = paste(JobFolder, JobName, sep = ""))
+} else {
+  saveRDS(dif, file = paste(JobFolder, JobName, sep = ""))
+}
 write(x = LOG_MESSAGE, file = paste(JobFolder, JobName, ".log", sep = ""))

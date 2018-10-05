@@ -6,8 +6,8 @@ library("optparse")
 LOG_MESSAGE <- ""
 
 option_list <- list(
-  make_option(c("-t", "--hhtree"), type = "character", default = "~/Documents/repos/hhtree", 
-              help = "Location of the package [default= %default]", metavar = "/path/to/hhtree"),
+  make_option(c("-t", "--mscripts"), type = "character", default = "~/Documents/repos/mscripts", 
+              help = "Location of the package [default= %default]", metavar = "/path/to/mscripts"),
   make_option(c("-o", "--out"), type = "character", 
               help = "Location where the output is stored", metavar = "/output/folder"),
   make_option(c("-j", "--job"), type = "character", 
@@ -21,12 +21,12 @@ option_list <- list(
 opt_parser <- OptionParser(option_list = option_list);
 opt <- parse_args(opt_parser);
 
-# hhtree <- "~/Documents/repos/hhtree"
+# mscripts <- "~/Documents/repos/mscripts"
 # JobFolder <- "/data/niko/final/benchmark10/test12/"
 # JobName <- "test12"
 # dimensions <- 11
 
-hhtree <- opt$hhtree
+mscripts <- opt$mscripts
 JobFolder <- opt$out
 JobName <- opt$job
 unconstrained <- opt$unconstrained
@@ -37,8 +37,8 @@ if (unconstrained) {
   methname <- paste(methname, "unc", sep = "_")
   dimensions <- 2
 }
-various <- paste(hhtree, "/scripts/various.R", sep = "")
-evaluat <- paste(hhtree, "/scripts/evaluate_method.R", sep = "")
+various <- paste(mscripts, "/scripts/various.R", sep = "")
+evaluat <- paste(mscripts, "/scripts/evaluate_method.R", sep = "")
 
 suppressPackageStartupMessages(source(various))
 suppressPackageStartupMessages(source(evaluat))
@@ -47,6 +47,7 @@ job <- paste(JobFolder, JobName, sep = "")
 
 cell_params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
 time <- cell_params$pseudotime - min(cell_params$pseudotime) + 1
+start <- min(which(time == min(time)))
 labels <- cell_params$branches + 1
 
 # set up monocle ----
@@ -68,7 +69,7 @@ if (!is.na(data)) {
   # help monocle out with determining pseudotime:
   # ideal: make it start pseudotime at cell 1
   # but monocle sometimes will put cell_1 in an inner branch.
-  new_root <- pData(data)$State[1]
+  new_root <- pData(data)$State[start]
   tryCatch( {
     data2 <- orderCells(data, root_state = new_root)
     mbranches <- pData(data2)$State
