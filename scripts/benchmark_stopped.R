@@ -5,10 +5,6 @@ mscripts <- args[1]
 JobFolder <- args[2]
 JobName <- paste(args[3], "_", sep="")
 method <- args[4]
-# mscripts <- "~/Documents/repos/mscripts"
-# JobFolder <- "~/Desktop/benchmark/test0/"
-# JobName <- paste("test0", "_", sep="")
-# dimensions <- 2
 
 various <- paste(mscripts, "/scripts/various.R", sep="")
 evaluat <- paste(mscripts, "/scripts/evaluate_method.R", sep="")

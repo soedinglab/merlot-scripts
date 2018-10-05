@@ -34,7 +34,7 @@ suppressPackageStartupMessages(source(splat_funcs))
 seed <- sample(0:999, 1)
 set.seed(seed)
 # sample number of genes
-G <- sample(1000:10000, 1)
+G <- sample(100:1000, 1)
 # set branch length
 branch_length <- 50
 
@@ -45,10 +45,11 @@ lineage_tree <- gen_random_topology(num_bif)
   
 params <- newSplatParams(seed=seed,
                          nGenes=G,
-                         batchCells=total_cells,
+                         batchCells=total_cells*2,
                          path.length=branch_length,
                          group.prob = group_probs,
-                         path.from=lineage_tree)
+                         path.from=lineage_tree,
+                         de.prob=1.)
 sim.paths <- splatSimulate(method = "paths", verbose = FALSE, params=params)
 
 # count matrix

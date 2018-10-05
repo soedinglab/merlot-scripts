@@ -8,4 +8,5 @@ mscripts="path/to/mscripts"
 for n in 1 2 3 4 5 6 7 8 9 10;
 do
     bash $mscripts/scripts/benchmarkN_serial.sh $mscripts sim some/dir/benchmark$n 100 25 $n PROSSTT
+    # bash $mscripts/scripts/benchmarkN_serial.sh $mscripts sim some/other/dir/benchmark$n 100 25 $n splatter
 done

@@ -41,11 +41,17 @@ suffix <- split_name[length(split_name)]
 input_data <- readRDS(filein)
 
 if (grepl("destiny", filein)) {
-  CellCoordinates <- input_data@eigenvectors[,1:dimensions]
+  input_coordinates <- input_data@eigenvectors[,1:dimensions]
+  dimensions <- min(c(dimensions, dim(input_coordinates)[2]))
+  CellCoordinates <- input_coordinates[,1:dimensions]
 } else if (grepl("monocl", filein)) {
-  CellCoordinates <- t(input_data@reducedDimS)[,1:dimensions]
+  input_coordinates <- t(input_data@reducedDimS)[,1:dimensions]
+  dimensions <- min(c(dimensions, dim(input_coordinates)[2]))
+  CellCoordinates <- input_coordinates[,1:dimensions]
 } else if (grepl("TSCAN", filein)) {
-  CellCoordinates <- input_data$pcareduceres[,1:dimensions]
+  input_coordinates <- input_data$pcareduceres[,1:dimensions]
+  dimensions <- min(c(dimensions, dim(input_coordinates)[2]))
+  CellCoordinates <- input_coordinates[,1:dimensions]
 }
 
 # load functions

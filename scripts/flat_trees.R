@@ -72,7 +72,9 @@ branch_order <- function(x, zone, parents, branch_orientation) {
   res
 }
 
-flat_simulation <- function(cell_params, param_file, mode = "prosstt") {
+flat_simulation <- function(job, mode = "prosstt") {
+  cell_params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
+  param_file <- paste(job, "params.txt", sep = "_")
   if (mode == "prosstt") {
     branches <- cell_params$branches + 1
     topology <- read_prosstt_topology(param_file) + 1
@@ -168,7 +170,7 @@ plot_flat_tree <- function(cell_params, branch_orientation, prediction, pcex=1,
 
   par(mar = c(2., 1., 2., 1.))
   plot(times, branches, ylim=c(min(branch_orientation$to), max(branch_orientation$to)),
-       type="n", axes = FALSE, main=plot_title, xlab = "pseudotime", ylab = "")
+       type="n", axes = FALSE, main = plot_title, xlab = "pseudotime", ylab = "")
   time_labs <- seq(min(min(times), 0), max(times)+1, by = time_step)
   axis(1, at=time_labs, labels = time_labs)
   for (i in seq_along(branch_names)) {

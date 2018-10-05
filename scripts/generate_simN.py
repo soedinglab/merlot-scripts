@@ -96,11 +96,11 @@ def main(job_id, save_dir, num_brpoints):
     # programs firing from the start
     mya = np.min([0.05, 1 / t.modules])
 
-    uMs, Ws, H = sim.simulate_lineage(t, a=mya)
+    uMs, Ws, H = sim.simulate_lineage(t, a=mya, intra_branch_tol=0, inter_branch_tol=0)
     # test = maxes(uMs)
     # print(test)
 
-    gene_scale = sut.simulate_base_gene_exp(t, uMs, abs_max=5000)
+    gene_scale = sut.simulate_base_gene_exp(t, uMs, abs_max=10000)
     Ms = {}
     for branch in t.branches:
         Ms[branch] = np.exp(uMs[branch]) * gene_scale

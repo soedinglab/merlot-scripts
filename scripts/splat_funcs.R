@@ -1,5 +1,10 @@
 #!/usr/bin/Rscript
 
+map2color<-function(x,pal,limits=NULL){
+  if(is.null(limits)) limits=range(x)
+  pal[findInterval(x,seq(limits[1],limits[2],length.out=length(pal)+1), all.inside=TRUE)]
+}
+
 save_splat_parameters <- function(output, genes, pseudotime, topology, random_seed, modules = 0) {
   destination <- file(output)
   

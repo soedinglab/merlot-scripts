@@ -28,14 +28,15 @@ done
 # make the simulations
 if [ "$sim" = "splatter" ]; then
   # echo "splatter"
-  parallel -j "$cores" --colsep " " --results "$out"/ -a "$out"/par_params bash "$mscripts"/scripts/run_splatN.sh "$mscripts" {1} {2} bla "$n"
+  parallel -j "$cores" --colsep " " --results "$out"/ -a "$out"/par_params bash "$mscripts"/scripts/run_splatN.sh "$mscripts" {1} {2} "$n"
 elif [ "$sim" = "PROSSTT" ]; then
   # echo "prosstt"
-  parallel -j "$cores" --colsep " " --results "$out"/ -a "$out"/par_params bash "$mscripts"/scripts/run_simN.sh "$mscripts" {1} {2} bla "$n"
+  parallel -j "$cores" --colsep " " --results "$out"/ -a "$out"/par_params bash "$mscripts"/scripts/run_simN.sh "$mscripts" {1} {2} "$n"
 fi
 
 # run predictions and evaluate them
-parallel -j "$cores" --colsep " " --results "$out"/ -a "$out"/par_params bash "$mscripts"/scripts/run_as_one.sh "$mscripts" {1} {2} bla "$n"
+parallel -j "$cores" --colsep " " --results "$out"/ -a "$out"/par_params bash "$mscripts"/scripts/run_as_one.sh "$mscripts" {1} {2} "$n"
 
-# parse all scaffold trees and record the number of endpoints, branch points and branches
-Rscript "$mscripts"/scripts/parse_scaffolds.R -o "$out" -b "$out"
+# parse all scaffold trees and record the number of endpoints, branch points and branches.
+# This is optional - only run if you want to see the performance of the scaffold trees.
+# Rscript "$mscripts"/scripts/parse_scaffolds.R -o "$out" -b "$out"
