@@ -2,13 +2,14 @@
 
 suppressPackageStartupMessages(library(merlot))
 suppressPackageStartupMessages(library(destiny))
+suppressPackageStartupMessages(library(ElPiGraph.R))
 library("optparse")
 
 LOG_MESSAGE <- ""
 
 option_list <- list(
-  make_option(c("-t", "--mscripts"), type = "character", default = "~/Documents/repos/merlot-scripts", 
-              help = "Location of the package [default= %default]", metavar = "/path/to/merlot-scripts"),
+  make_option(c("-t", "--mscripts"), type = "character", default = "~/Documents/repos/mscripts", 
+              help = "Location of the package [default= %default]", metavar = "/path/to/mscripts"),
   make_option(c("-o", "--out"), type = "character", 
               help = "Location where the output is stored", metavar = "/output/folder"),
   make_option(c("-j", "--job"), type = "character", 
@@ -17,9 +18,9 @@ option_list <- list(
               help = "how many dimensions to use for the embedding [default = %default]", metavar = "INT"),
   make_option(c("-k", "--n_yk"), type = "integer", default = 100,
               help = "k for elastic tree [default = %default]", metavar = "INT"),
-  make_option(c("-m", "--mu0"), type = "double", default = 0.00625,
-              help = "mu0 for elastic tree [default = %default]", metavar = "double"),
-  make_option(c("-l", "--lambda0"), type = "double", default = 2.03e-09,
+  make_option(c("-m", "--mu0"), type="double", default=0.00250,
+              help="mu0 for elastic tree [default = %default]", metavar="double"),
+  make_option(c("-l", "--lambda0"), type="double", default=0.80e-09,
               help = "lambda0 for elastic tree [default = %default]", metavar = "double"),
   make_option(c("-s", "--showparams"), action = "store_true", default = FALSE,
               help = "Whether to print the values of k, l0, mu0 in the result [default = %default]"),
@@ -32,11 +33,13 @@ option_list <- list(
   make_option(c("--sens"), action = "store_true", default = FALSE,
               help = "Toggle in order to use the number of cells instead of the number of scaffold nodes for branch detection. [default = %default]"),
   make_option(c("-n", "--knn"), action = "store_true", default = FALSE,
-              help = "Toggle to use a simple heuristic for choosing a k for diffusion maps. [default = %default]"),
+              help = "Toggle if the simple heuristic for choosing a k for diffusion maps was used. [default = %default]"),
   make_option("--log", action = "store_true", default = FALSE,
               help = "Toggle to transform data to log(data+1) before analysis. [default = %default]"),
   make_option(c("-i", "--interpolate"), type = "character", action = "store", default = "none",
-              help = "Whether and where to add interpolated nodes to the tree before evaluation. One of 'elastic', 'emb', 'elemb', 'none'. [default = %default]")
+              help = "Whether and where to add interpolated nodes to the tree before evaluation. One of 'elastic', 'emb', 'elemb', 'none'. [default = %default]"),
+  make_option(c("-e", "--select"), type="character", default = "none",
+              help = "The <name> (merlot|monocle) of a file with a subset of the dataset with only informative genes.")
 ); 
 
 opt_parser <- OptionParser(option_list = option_list);
@@ -57,6 +60,7 @@ sens <- opt$sens
 knn <- opt$knn
 iflog <- opt$log
 interp <- opt$interpolate
+select <- opt$select
 
 choices <- c("elastic", "emb", "elemb", "none")
 if(!interp %in% choices) {
@@ -69,8 +73,8 @@ if (fixed) {
 }
 
 # mscripts <- "~/Documents/repos/mscripts"
-# JobFolder <- "/data/niko/final/benchmark2/test0/"
-# JobName <- "test0"
+# JobFolder <- "/data/niko/test/benchmark1/splat0/"
+# JobName <- "splat0"
 # dimensions <- 2
 # N_yk <- 100
 # mu0 <- 0.00625
@@ -80,9 +84,10 @@ if (fixed) {
 # embed <- TRUE
 # fixed <- FALSE
 # sens <- TRUE
-# knn <- FALSE
+# knn <- TRUE
 # iflog <- TRUE
 # interp <- "none"
+# select <- "monocle"
 
 
 if (interp == "elastic" && embed == TRUE) {
@@ -99,7 +104,15 @@ job <- paste(JobFolder, JobName, sep = "")
 prefix <- ""
 if (iflog) prefix <- paste(prefix, "_log", sep = "")
 if (knn) prefix <- paste(prefix, "_k", sep = "")
+if (select == "merlot") {
+  prefix <- paste(prefix, "_sel_merlot", sep = "")
+} else if (select == "monocle") {
+  prefix <- paste(prefix, "_sel_monocle", sep = "")
+} else if (select == "seurat") {
+  prefix <- paste(prefix, "_sel_seurat", sep = "")
+}
 diffmap <- paste("destiny", prefix, sep = "")
+print(diffmap)
 # print(paste("using ", job, diffmap, sep = "_"))
 dif <- readRDS(file = paste(job, diffmap, sep = "_"))
 CellCoordinates <- dif@eigenvectors[,1:dimensions]
@@ -120,7 +133,7 @@ rm(dif)
 if (fixed) {
   prefix <- paste(prefix, "fixed", sep = "_")
 } else {
-  prefix <- paste(prefix, "auto", sep = "_")
+  prefix <- paste(prefix, "free", sep = "_")
 }
 
 if (embed) {
@@ -128,10 +141,10 @@ if (embed) {
 } else {
   res_prefix <- paste(prefix, "el", sep = "_")
 }
-# print(prefix)
+print(prefix)
 
-various <- paste(mscripts, "/various.R", sep = "")
-evaluat <- paste(mscripts, "/evaluate_method.R", sep = "")
+various <- paste(mscripts, "/scripts/various.R", sep = "")
+evaluat <- paste(mscripts, "/scripts/evaluate_method.R", sep = "")
 
 suppressPackageStartupMessages(source(various))
 suppressPackageStartupMessages(source(evaluat))
@@ -143,15 +156,16 @@ scalings <- sum1/mean(sum1)
 Dataset$ExpressionMatrix = (1/scalings)*Dataset$ExpressionMatrix
 if (iflog) Dataset$ExpressionMatrix = log(Dataset$ExpressionMatrix+1)
 
-cells <- rownames(raw)
-genes <- colnames(raw)
+cells <- Dataset$Descriptions
+genes <- Dataset$GeneNames
 
 cell_params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
 time <- cell_params$pseudotime - min(cell_params$pseudotime) + 1
+start <- min(which(time == min(time)))
 labels <- cell_params$branches + 1
 
 if(embed) {
-  methname <- paste("_MERLoT_dest", prefix, sep = "")
+  methname <- paste("_LPGraph", prefix, sep = "")
 
   if (interp == "elemb") {
     methname <- paste(methname, "_el_il", sep = "")
@@ -174,7 +188,7 @@ if(embed) {
   }
 
 } else {
-  methname <- paste("_MERLoT_dest", res_prefix, sep = "")
+  methname <- paste("_LPGraph", res_prefix, sep = "")
   # since we run many versions of the elastic tree maybe we have already calculated the scaffold tree
   if (interp == "elastic") {
     scaffold <- readRDS(paste(job, methname, ".scaf", sep = ""))
@@ -196,15 +210,15 @@ if(embed) {
         scaffold <- CalculateScaffoldTree(CellCoordinates)
       }
     }
-    tree <- CalculateElasticTree(scaffold, N_yk, FixEndpoints = F)
-    methname <- paste("_MERLoT_dest", res_prefix, sep = "")
+    tree <- CalculateElasticTree(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
+    methname <- paste("_LPGraph", res_prefix, sep = "")
     saveRDS(object = tree, file = paste(job, methname, ".elastic", sep = ""))
     saveRDS(object = scaffold, file = paste(job, methname, ".scaf", sep = ""))
   }
 }
 
 nodes = tree$Cells2TreeNodes[, 2]
-Pseudotimes <- CalculatePseudotimes(tree, C0 = 1)
+Pseudotimes <- CalculatePseudotimes(tree, C0 = start)
 # C0 = min(which(nodes %in% tree$Topology$Endpoints))
 # if(is.infinite(C0)) {
 #   Pseudotimes = CalculatePseudotimes(tree, C0 = 1)
@@ -227,7 +241,7 @@ if(length(hhbranches) == 1) {
 
 # print(hhtimes)
 par_loc <- paste(job, "params.txt", sep = "_")
-methname <- paste("MERLoT_dest", res_prefix, sep = "")
+methname <- paste("LPGraph", res_prefix, sep = "")
 res <- evaluate_method(methname, hhbranches, hhtimes, cell_params, par_loc)
 # print(hhres)
 if (showparams) {

@@ -6,8 +6,8 @@ library("optparse")
 LOG_MESSAGE <- ""
 
 option_list <- list(
-  make_option(c("-t", "--hhtree"), type="character", default="~/Documents/repos/hhtree", 
-              help="Location of the package [default= %default]", metavar="/path/to/hhtree"),
+  make_option(c("-t", "--mscripts"), type="character", default="~/Documents/repos/mscripts", 
+              help="Location of the package [default= %default]", metavar="/path/to/mscripts"),
   make_option(c("-o", "--out"), type="character", 
               help="Location where the output is stored", metavar="/output/folder"),
   make_option(c("-j", "--job"), type="character", 
@@ -21,14 +21,14 @@ option_list <- list(
 opt_parser <- OptionParser(option_list = option_list);
 opt <- parse_args(opt_parser);
 
-hhtree <- opt$hhtree
+mscripts <- opt$mscripts
 JobFolder <- opt$out
 JobName <- opt$job
 dimensions <- opt$dimensions
 iflog <- opt$log
 
-various <- paste(hhtree, "/scripts/various.R", sep="")
-evaluat <- paste(hhtree, "/scripts/evaluate_method.R", sep="")
+various <- paste(mscripts, "/scripts/various.R", sep="")
+evaluat <- paste(mscripts, "/scripts/evaluate_method.R", sep="")
 
 suppressPackageStartupMessages(source(various))
 suppressPackageStartupMessages(source(evaluat))
@@ -46,6 +46,7 @@ if(iflog) {
 
 cell_params <- read.table(file = paste(job, "cellparams.txt", sep="_"), sep="\t", header = T, row.names = 1)
 time <- cell_params$pseudotime - min(cell_params$pseudotime) + 1
+start <- min(which(time == min(time)))
 labels <- cell_params$branches + 1
 
 # SLICER ----
@@ -56,7 +57,6 @@ LOG_MESSAGE <- paste(LOG_MESSAGE, "dimensions:", dim(data_lle), "\n")
 assign("LOG_MESSAGE", LOG_MESSAGE, envir = .GlobalEnv)
 data_graph <- conn_knn_graph(data_lle,k)
 ends <- find_extreme_cells(data_graph, data_lle)
-start <- 1
 cells_ordered <- cell_order(data_graph, start)
 stimes <- cells_ordered
 

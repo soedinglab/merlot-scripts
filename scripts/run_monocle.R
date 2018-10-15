@@ -46,7 +46,8 @@ option_list <- list(
   make_option(c("-d", "--dimensions"), type="integer", default=2,
               help="how many dimensions to use for the embedding [default = %default]", metavar="INT"),
   make_option("--unconstrained", action = "store_true", default = FALSE,
-              help = "Toggle to let monocle do unconstrained dimensionality reduction [default = %default]")
+              help = "Toggle to let monocle do unconstrained dimensionality reduction [default = %default]"),
+  make_option(c("-s", "--select"), type="character", default = "none", help = "The <name> of a file with a subset of the dataset with only informative genes.")
 );
 
 opt_parser <- OptionParser(option_list=option_list);
@@ -55,6 +56,7 @@ opt <- parse_args(opt_parser);
 JobFolder <- opt$out
 JobName <- opt$job
 unconstr <- opt$unconstrained
+select <- opt$select
 
 if (unconstr) {
   dimensions <- 2
@@ -64,18 +66,30 @@ if (unconstr) {
 
 # JobFolder = "/data/niko/final/benchmark10/test82/"
 # JobName = "test82"
-# dimensions = 11
+# dimensions = 4
 # unconstr = FALSE
+# select = "monocle"
 
 job <- paste(JobFolder, JobName, sep="")
-raw <- read.table(file=paste(job, "simulation.txt", sep="_"), sep="\t", header=T, row.names=1, stringsAsFactors=T)
-data <- as.matrix(raw)
-exprs <- t(as.matrix(raw))
-# monocle does the normalization itself, so no need to
-# sum1 = apply(exprs, 1, sum)
-# scalings = sum1/mean(sum1)
-# exprs = (1/scalings)*exprs
 
+preselected <- FALSE
+full_name <- paste(job, "simulation.txt", sep = "_")
+selected_name <- ""
+if (select == "none") {
+  selected_name <- paste(job, "simulation.txt", sep = "_")
+} else {
+  preselected <- TRUE
+  selected_name <- paste(job, "_simulation_sel_", select, ".txt", sep = "")
+}
+
+full_name <- paste(job, "_simulation.txt", sep="")
+print(full_name)
+print(selected_name)
+selected <- read.table(file=selected_name, sep="\t", header=T, row.names=1, stringsAsFactors=T)
+selected <- t(as.matrix(selected))
+full <- read.table(file=full_name, sep="\t", header=T, row.names=1, stringsAsFactors=T)
+
+exprs <- t(as.matrix(full))
 data <- newCellDataSet(exprs, expressionFamily = negbinomial(), lowerDetectionLimit = 1)
 
 # run monocle ----
@@ -90,9 +104,13 @@ data <- tryCatch( {estimateDispersions(data)},
 
 if (!is.na(data)) {
   data <- detectGenes(data, min_expr=0.1)
-  
+
   disp_table <- dispersionTable(data)
-  ordering_genes <- subset(disp_table, mean_expression >= 0.5 & dispersion_empirical >= 2*dispersion_fit)$gene_id
+  if (preselected) {
+    ordering_genes <- rownames(selected)
+  } else {
+    ordering_genes <- subset(disp_table, mean_expression >= 0.5 & dispersion_empirical >= 2*dispersion_fit)$gene_id
+  }
   
   data <- setOrderingFilter(data, ordering_genes)
   if (unconstr) {
@@ -113,6 +131,12 @@ if (unconstr) {
   JobName <- paste(JobName, "unc", sep = "_")
 }
 
-saveRDS(object=data, file = paste(JobFolder, JobName, sep=""))
+if (preselected) {
+  JobName <- paste(JobName, "sel", select, sep = "_")
+  saveRDS(object=data, file = paste(JobFolder, JobName, sep=""))
+} else {
+  saveRDS(object=data, file = paste(JobFolder, JobName, sep=""))
+}
+
 # run TreeTopology.py on JobFolder_JobName_CellCoord
 write(x = LOG_MESSAGE, file = paste(JobFolder, JobName, ".log", sep=""))
