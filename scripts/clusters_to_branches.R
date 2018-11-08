@@ -117,7 +117,11 @@ assign_branches <- function(g, clusterid, clucenter, coords) {
       # we have to format cells as a matrix because if there is exactly one 
       # unassigned cell it will be treated as a vector D:
       ndim <- dim(coords)[2]
-      cells <- matrix(coords[b_cells, ], ncol = ndim)
+      if (ndim == 1) {
+        cells <- matrix(coords[b_cells, ], ncol = ndim)
+      } else {
+        cells <- as.matrix(coords[b_cells, ])
+      }
       
       # lots of help by https://stackoverflow.com/questions/16283347
       distances <- outer(
