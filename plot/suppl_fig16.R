@@ -1,16 +1,15 @@
 library(Rtsne)
 library(viridis)
 library(LSD)
-source("/path/to/merlot-scripts/scripts/splat_funcs.R")
+source("/path/to/merlot-scipts/scripts/splat_funcs.R")
 
 set.seed(42)
 
-# i is the benchmark number, j the simulation number
-i <- 8 # 9 9
-j <- 70 # 8 28
+i <- 9
+j <- 28
 
-main_dir <- "/directory/of/benchmark/folder"
-out_dir <- "/output/dir"
+main_dir <- "path/to/benchmark"
+out_dir <- "/output/path"
 benchmark_dir = paste(main_dir, i, "/", sep="")
 this <- paste("sim", j, sep="")
 job <- paste(benchmark_dir, this, "/", this, sep="")
