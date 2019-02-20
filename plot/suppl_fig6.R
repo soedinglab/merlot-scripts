@@ -1,5 +1,5 @@
 #!/usr/bin/Rscript
-source("~/Documents/repos/hhtree/scripts/auxiliary.R")
+source("/path/to/merlot-scripts/scripts/auxiliary.R")
 
 benchmarks <- c("/path/to/prosstt/benchmark",
                 "/path/to/splatter/benchmark")

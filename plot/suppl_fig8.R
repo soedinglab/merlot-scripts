@@ -1,4 +1,4 @@
-source("~/Documents/repos/hhtree/scripts/auxiliary.R")
+source("/path/to/merlot-scipts/scripts/auxiliary.R")
 
 bench_dir <- "/path/to/benchmark"
 selected <- prosstt_selected
@@ -67,9 +67,9 @@ permutation <- c(11, 4, 6, 1, 2, 5, 7, 3, 8, 9, 10)
 legend_text <- c("Destiny", "SLICER", "Monocle2", "MERLoT + destiny fixed", "MERLoT + DDRTree fixed",
                  "MERLoT + destiny auto", "MERLoT + DDRTree auto", "slingshot + destiny", "slingshot + monocle",
                  "TSCAN", "Expected branch number")
-paper_cols <- c(cols, "gray")
-paper_pch <- c(pchs, 1)
-paper_lty <- c(ltys, 1)
+paper_cols <- c("royalblue4", cols, "gray")
+paper_pch <- c(18, pchs, 1)
+paper_lty <- c(1, ltys, 1)
 legend("bottom", legend=legend_text[permutation], lty=paper_lty[permutation], lwd=3,
        col=paper_cols[permutation], ncol=2, pt.cex=1.5, pch=paper_pch[permutation])
-# dev.off()
+dev.off()

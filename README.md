@@ -1,3 +1,10 @@
+## Dependencies
+These scripts require the [`rprosstt`](https://github.com/soedinglab/prosstt-r) package for some plotting functions. Install from github using `devtools`:
+```
+library(devtools)
+install_github("soedinglab/prosstt-r")
+```
+
 ## benchmark scripts
 
 A collection of scripts that was used to generate and benchmark the simulations provided with the tool MERLoT. Download the expression matrices and parameter files via the [GWDG FTP server](wwwuser.gwdg.de/~compbiol/merlot/). These will be used as examples for the various scripts.

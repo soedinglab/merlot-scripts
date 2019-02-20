@@ -3,6 +3,8 @@ suppressPackageStartupMessages(library(reshape2))
 suppressPackageStartupMessages(library(scales))
 suppressPackageStartupMessages(library(plotly))
 
+hhtree <- "/path/to/merlot-scripts"
+
 .pardefault <- par(no.readonly = T)
 
 # find the longest path in a tree and score it according to a method
@@ -39,7 +41,6 @@ all_longest_paths <- function(name, method, mtimes, cell_params, par_loc,
   return(t(res))
 }
 
-hhtree <- "~/Documents/repos/hhtree"
 various <- paste(hhtree, "/scripts/various.R", sep="")
 evaluat <- paste(hhtree, "/scripts/evaluate_method.R", sep="")
 
