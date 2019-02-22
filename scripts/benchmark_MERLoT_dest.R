@@ -43,7 +43,7 @@ option_list <- list(
   make_option(c("-r", "--reduced"), type="character", default = "none",
               help = "The suffix of a file with local averaging."),
   make_option("--elpi", action = "store_true", default = FALSE,
-              help = "Toggle to use default mu and lambda parameters for the elastic tree. [default = %default]"),
+              help = "Toggle to use default mu and lambda parameters for the elastic tree. [default = %default]")
 ); 
 
 opt_parser <- OptionParser(option_list = option_list);
@@ -153,7 +153,7 @@ if (fixed) {
 }
 
 if(reduced != "none") prefix <- paste(prefix, reduced, sep = "_")
-if(elpi) {
+if(use_elpi) {
   prefix <- paste(prefix, "elpi", sep = "_")
 } else {
   prefix <- paste(prefix, "merlot", sep = "_")
@@ -190,13 +190,7 @@ labels <- cell_params$branches + 1
 
 if(embed) {
   methname <- paste("_LPGraph", prefix, sep = "")
-
-  if (interp == "elemb") {
-    methname <- paste(methname, "_el_il", sep = "")
-    res_prefix <- paste(res_prefix, "ilm", sep = "_")
-  } else {
-    methname <- paste(methname, "_el", sep = "")
-  }
+  methname <- paste(methname, "_el", sep = "")
 
   if (sens) {
     res_prefix <- paste(res_prefix, "sens", sep = "_")
@@ -204,53 +198,38 @@ if(embed) {
   }
   print(paste("reading ", job, methname, ".elastic", sep = ""))
   etree <- readRDS(paste(job, methname, ".elastic", sep = ""))
-  if (elpi) {
+  if (use_elpi) {
     tree <- nikoEmbed(Dataset$ExpressionMatrix, etree)
   } else {
     tree <- GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = etree)
   }
 
-  if (interp == "emb") {
-    tree <- DuplicateTreeNodes(tree)
-    methname <- paste(methname, "_emb_im", sep = "")
-    res_prefix <- paste(res_prefix, "im", sep = "_")
-  }
-
 } else {
   methname <- paste("_LPGraph", res_prefix, sep = "")
   # since we run many versions of the elastic tree maybe we have already calculated the scaffold tree
-  if (interp == "elastic") {
-    scaffold <- readRDS(paste(job, methname, ".scaf", sep = ""))
-    tree <- readRDS(paste(job, methname, ".elastic", sep = ""))
-
-    tree <- DuplicateTreeNodes(tree)
-    res_prefix <- paste(res_prefix, "il", sep = "_")
-    saveRDS(object = tree, file = paste(job, methname, "_il.elastic", sep = ""))
+  if(fixed) {
+    scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1, docker="soedinglab/merlot")
   } else {
-
-    if(fixed) {
-      scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1, docker="soedinglab/merlot")
+    if (sens) {
+      N <- length(cells)
+      res_prefix <- paste(res_prefix, "sens", sep = "_")
+      scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N), docker="soedinglab/merlot")
     } else {
-      if (sens) {
-        N <- length(cells)
-        res_prefix <- paste(res_prefix, "sens", sep = "_")
-        scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N), docker="soedinglab/merlot")
-      } else {
-        scaffold <- CalculateScaffoldTree(CellCoordinates, docker="soedinglab/merlot")
-      }
+      scaffold <- CalculateScaffoldTree(CellCoordinates, docker="soedinglab/merlot")
     }
-    if (elpi) {
-      tree <- nikoElastic(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
-    } else {
-      tree <- CalculateElasticTree(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
-    }
-    if (reduced != "none") {
-      tree <- inflate_elastic_tree(tree, FullCoordinates)
-    }
-    methname <- paste("_LPGraph", res_prefix, sep = "")
-    saveRDS(object = tree, file = paste(job, methname, ".elastic", sep = ""))
-    saveRDS(object = scaffold, file = paste(job, methname, ".scaf", sep = ""))
   }
+  
+  if (use_elpi) {
+    tree <- nikoElastic(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
+  } else {
+    tree <- CalculateElasticTree(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
+  }
+  if (reduced != "none") {
+    tree <- inflate_elastic_tree(tree, FullCoordinates)
+  }
+  methname <- paste("_LPGraph", res_prefix, sep = "")
+  saveRDS(object = tree, file = paste(job, methname, ".elastic", sep = ""))
+  saveRDS(object = scaffold, file = paste(job, methname, ".scaf", sep = ""))
 }
 
 nodes = tree$Cells2TreeNodes[, 2]
