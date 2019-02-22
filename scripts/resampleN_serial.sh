@@ -27,7 +27,7 @@ do
   echo "$name" "${out}/${name}/${name}" "${resample}/${name}" >> "${resample}"/par_params
 done
 
-# parallel -j "$cores" --colsep " " --results "$out"/ -a "$resample"/par_params bash "$mscripts"/scripts/resample.sh "$mscripts" {1} {3} "$n" {2}
+parallel -j "$cores" --colsep " " --results "$out"/ -a "$resample"/par_params bash "$mscripts"/scripts/resample.sh "$mscripts" {1} {3} "$n" {2}
 
 # run predictions and evaluate them
 parallel -j "$cores" --colsep " " --results "$out"/ -a "$resample"/par_params bash "$mscripts"/scripts/run_as_one.sh "$mscripts" {1} {3} "$n"

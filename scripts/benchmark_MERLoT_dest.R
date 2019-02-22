@@ -39,7 +39,11 @@ option_list <- list(
   make_option(c("-i", "--interpolate"), type = "character", action = "store", default = "none",
               help = "Whether and where to add interpolated nodes to the tree before evaluation. One of 'elastic', 'emb', 'elemb', 'none'. [default = %default]"),
   make_option(c("-e", "--select"), type="character", default = "none",
-              help = "The <name> (merlot|monocle) of a file with a subset of the dataset with only informative genes.")
+              help = "The <name> (merlot|monocle) of a file with a subset of the dataset with only informative genes."),
+  make_option(c("-r", "--reduced"), type="character", default = "none",
+              help = "The suffix of a file with local averaging."),
+  make_option("--elpi", action = "store_true", default = FALSE,
+              help = "Toggle to use default mu and lambda parameters for the elastic tree. [default = %default]"),
 ); 
 
 opt_parser <- OptionParser(option_list = option_list);
@@ -61,6 +65,8 @@ knn <- opt$knn
 iflog <- opt$log
 interp <- opt$interpolate
 select <- opt$select
+reduced <- opt$reduced
+use_elpi <- opt$elpi
 
 choices <- c("elastic", "emb", "elemb", "none")
 if(!interp %in% choices) {
@@ -113,10 +119,20 @@ if (select == "merlot") {
 }
 diffmap <- paste("destiny", prefix, sep = "")
 print(diffmap)
-# print(paste("using ", job, diffmap, sep = "_"))
-dif <- readRDS(file = paste(job, diffmap, sep = "_"))
-CellCoordinates <- dif@eigenvectors[,1:dimensions]
+
+if (reduced == "none") {
+  # print(paste("using ", job, diffmap, sep = "_"))
+  dif <- readRDS(file = paste(job, diffmap, sep = "_"))
+  CellCoordinates <- dif@eigenvectors[,1:dimensions]
+} else {
+  dif <- paste(job, "_", diffmap, "_", reduced, ".txt", sep="")
+  CellCoordinates <- read.table(dif, sep=" ", header=FALSE)
+  dif <- readRDS(file = paste(job, diffmap, sep = "_"))
+  FullCoordinates <- dif@eigenvectors[,1:dimensions]
+}
+
 LOG_MESSAGE <- paste(LOG_MESSAGE, "dimensions:", dim(CellCoordinates), "\n")
+LOG_MESSAGE <- paste(LOG_MESSAGE, "reduced:", reduced, "\n")
 assign("LOG_MESSAGE", LOG_MESSAGE, envir = .GlobalEnv)
 rm(dif)
 
@@ -136,6 +152,12 @@ if (fixed) {
   prefix <- paste(prefix, "free", sep = "_")
 }
 
+if(reduced != "none") prefix <- paste(prefix, reduced, sep = "_")
+if(elpi) {
+  prefix <- paste(prefix, "elpi", sep = "_")
+} else {
+  prefix <- paste(prefix, "merlot", sep = "_")
+}
 if (embed) {
   res_prefix <- paste(prefix, "emb", sep = "_")
 } else {
@@ -145,9 +167,11 @@ print(prefix)
 
 various <- paste(mscripts, "/scripts/various.R", sep = "")
 evaluat <- paste(mscripts, "/scripts/evaluate_method.R", sep = "")
+niko <- paste(mscripts, "/scripts/niko_tree_funcs.R", sep = "")
 
 suppressPackageStartupMessages(source(various))
 suppressPackageStartupMessages(source(evaluat))
+suppressPackageStartupMessages(source(niko))
 
 Dataset <- ReadDataset(paste(job, "simulation.txt", sep = "_"))
 
@@ -178,8 +202,13 @@ if(embed) {
     res_prefix <- paste(res_prefix, "sens", sep = "_")
     methname <- paste(methname, "sens", sep = "_")
   }
+  print(paste("reading ", job, methname, ".elastic", sep = ""))
   etree <- readRDS(paste(job, methname, ".elastic", sep = ""))
-  tree <- GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = etree)
+  if (elpi) {
+    tree <- nikoEmbed(Dataset$ExpressionMatrix, etree)
+  } else {
+    tree <- GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = etree)
+  }
 
   if (interp == "emb") {
     tree <- DuplicateTreeNodes(tree)
@@ -200,17 +229,24 @@ if(embed) {
   } else {
 
     if(fixed) {
-      scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1)
+      scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1, docker="soedinglab/merlot")
     } else {
       if (sens) {
         N <- length(cells)
         res_prefix <- paste(res_prefix, "sens", sep = "_")
-        scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N))
+        scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N), docker="soedinglab/merlot")
       } else {
-        scaffold <- CalculateScaffoldTree(CellCoordinates)
+        scaffold <- CalculateScaffoldTree(CellCoordinates, docker="soedinglab/merlot")
       }
     }
-    tree <- CalculateElasticTree(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
+    if (elpi) {
+      tree <- nikoElastic(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
+    } else {
+      tree <- CalculateElasticTree(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
+    }
+    if (reduced != "none") {
+      tree <- inflate_elastic_tree(tree, FullCoordinates)
+    }
     methname <- paste("_LPGraph", res_prefix, sep = "")
     saveRDS(object = tree, file = paste(job, methname, ".elastic", sep = ""))
     saveRDS(object = scaffold, file = paste(job, methname, ".scaf", sep = ""))
