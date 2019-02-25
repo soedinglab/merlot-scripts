@@ -24,7 +24,7 @@ elif [ "$sim" = "PROSSTT" ]; then
 fi
 
 # simulate
-bash "$simscript" "$hhtree" "$job" "$out" bla "$n"
+bash "$simscript" "$scripts" "$job" "$out" "$n"
 
 # run diffusion maps
 Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -n -l -s none
