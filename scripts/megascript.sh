@@ -31,9 +31,9 @@ Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -n -l -s
 Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -l -s none
 
 # run monocle
-Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" --unconstrained -s none
-Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" -d "${dim}" -s none
+# Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" --unconstrained -s none
+# Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" -d "${dim}" -s none
 
 # run predictions and benchmark them
-bash "${scripts}"/timed_benchmarksN.sh "${hhtree}" "${out}"/ "${job}" "${dim}"
+bash "${scripts}"/timed_resamplesN.sh "${hhtree}" "${out}"/ "${job}" "${dim}"
 
