@@ -361,7 +361,7 @@ run_niko_tree <- function(job, reduced_coords, full_coords, start, funcname) {
   cell_params <- read.table(file = paste(job, "resampled.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
   par_loc <- paste(job, "params.txt", sep = "_")
   N <- dim(reduced_coords)[1]
-  scaf <- CalculateScaffoldTree(reduced_coords, BranchMinLengthSensitive = sqrt(N))
+  scaf <- CalculateScaffoldTree(reduced_coords, BranchMinLengthSensitive = sqrt(N), python_location="~/miniconda3/envs/py36/bin/python")
   if (length(scaf$Endpoints) == 2) {
       result <- evaluate_method(funcname, 0, 0, cell_params, par_loc)
       return(result)
@@ -381,7 +381,7 @@ run_normal_tree <- function(job, reduced_coords, full_coords, start, funcname) {
   cell_params <- read.table(file = paste(job, "resampled.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
   par_loc <- paste(job, "params.txt", sep = "_")
   N <- dim(reduced_coords)[1]
-  scaf <- CalculateScaffoldTree(reduced_coords, BranchMinLengthSensitive = sqrt(N))
+  scaf <- CalculateScaffoldTree(reduced_coords, BranchMinLengthSensitive = sqrt(N), python_location="~/miniconda3/envs/py36/bin/python")
   if (length(scaf$Endpoints) == 2) {
       result <- evaluate_method(funcname, 0, 0, cell_params, par_loc)
       return(result)
@@ -401,7 +401,7 @@ run_merlot <- function(job, full_coords, start, funcname) {
   cell_params <- read.table(file = paste(job, "resampled.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
   par_loc <- paste(job, "params.txt", sep = "_")
   N <- dim(full_coords)[1]
-  scaf <- CalculateScaffoldTree(full_coords, BranchMinLengthSensitive = sqrt(N))
+  scaf <- CalculateScaffoldTree(full_coords, BranchMinLengthSensitive = sqrt(N), python_location="~/miniconda3/envs/py36/bin/python")
   if (length(scaf$Endpoints) == 2) {
       result <- evaluate_method(funcname, 0, 0, cell_params, par_loc)
       return(result)

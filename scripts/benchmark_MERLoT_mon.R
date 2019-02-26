@@ -129,12 +129,12 @@ if (embed) {
   tree <- GenesSpaceEmbedding(ExpressionMatrix = normed_exp, ElasticTree = etree)
 } else {
   if(fixed) {
-    scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1)
+    scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1, python_location="~/miniconda3/envs/py36/bin/python")
   } else if (sens) {
-    scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N))
+    scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N), python_location="~/miniconda3/envs/py36/bin/python")
     res_prefix <- paste(res_prefix, "sens", sep = "_")
   } else {
-    scaffold <- CalculateScaffoldTree(CellCoordinates)
+    scaffold <- CalculateScaffoldTree(CellCoordinates, python_location="~/miniconda3/envs/py36/bin/python")
   }
 
   tree <- CalculateElasticTree(scaffold, N_yk, NBranchScaffoldNodes = FALSE)
