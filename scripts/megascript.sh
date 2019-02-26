@@ -30,9 +30,21 @@ bash "$simscript" "$scripts" "$job" "$out" "$n"
 Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -n -l -s none
 Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -l -s none
 
+# perform local averaging for the diffusion maps
+source activate py36
+python "${scripts}"/reduce.py -i "${out}"/"${job}"_destiny_log -d "${dim}"
+python "${scripts}"/reduce.py -i "${out}"/"${job}"_destiny_log_k -d "${dim}"
+source deactivate py36
+
 # run monocle
 # Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" --unconstrained -s none
 # Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" -d "${dim}" -s none
+
+# # perform local averaging for the diffusion maps
+# source activate py36
+# python "${scripts}"/reduce.py -i "${out}"/"${job}"_monocl2 -d "${dim}"
+# python "${scripts}"/reduce.py -i "${out}"/"${job}"_monocl2_unc -d "${dim}"
+# source deactivate py36
 
 # run predictions and benchmark them
 bash "${scripts}"/timed_resamplesN.sh "${hhtree}" "${out}"/ "${job}" "${dim}"

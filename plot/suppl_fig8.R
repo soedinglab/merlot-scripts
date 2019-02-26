@@ -1,4 +1,4 @@
-source("/path/to/merlot-scipts/scripts/auxiliary.R")
+source("/path/to/merlot-scripts/scripts/auxiliary.R")
 
 bench_dir <- "/path/to/benchmark"
 selected <- prosstt_selected
