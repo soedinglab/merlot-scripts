@@ -18,7 +18,7 @@ do
   do
     name=${batch}${i}
     mkdir -p "$benchmark"/"$name"
-    echo "$hhtree"/scripts/megascript.sh "$hhtree" "$name" "$benchmark"/"$name"/ "$b" "$sim" >> "$sub_file"
+    echo "$hhtree"/scripts/megascript.sh "$hhtree" "$name" "$benchmark"/"$name"/ "$b" "$sim" "&" >> "$sub_file"
   done
 done
 
@@ -39,5 +39,7 @@ for sub in sub*.sh; do
     echo "#BSUB -R \"span[ptile=16]\""
     echo ""
     echo "$test"
+    echo ""
+    echo "wait"
   } >> "$sub"
 done

@@ -19,14 +19,6 @@ from prosstt import simulation as sim
 from prosstt import tree
 from prosstt import sim_utils as sut
 
-with warnings.catch_warnings():
-    warnings.filterwarnings(message='.*Conversion of the second.*',
-                            action='ignore',
-                            category=FutureWarning,
-                            module='h5py')
-    import anndata as ad
-    from scanpy.api.tl import diffmap
-
 def maxes(x):
     res = np.zeros(len(x.keys()))
     for i, b in enumerate(x.keys()):
