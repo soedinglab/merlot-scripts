@@ -3,10 +3,9 @@ A script that will perform local averaging for a dimensionality-reduced
 simulation.
 """
 
-import numpy as np
-import rpy2
-from rpy2 import robjects
 import argparse
+import numpy as np
+import pandas as pd
 from sklearn.cluster import KMeans
 
 def cluster_kmeans(x, n_clust):
@@ -15,8 +14,7 @@ def cluster_kmeans(x, n_clust):
     return reduced_kmeans, kmeans.labels_
 
 def main(full_loc, dim):
-    robjects.r("dm <- readRDS('" + full_loc + "')")
-    dimensionality = np.array(robjects.r("dm@eigenvectors"))
+    dimensionality = np.array(pd.read_csv(full_loc + ".csv", sep=" ", header=0, index_col=0))
     full_coords = dimensionality[:, 0:int(dim)]
     del dimensionality
     n_clust = int(4 * np.sqrt(full_coords.shape[0]))
