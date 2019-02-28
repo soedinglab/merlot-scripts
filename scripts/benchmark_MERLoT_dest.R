@@ -158,12 +158,30 @@ if(use_elpi) {
 } else {
   prefix <- paste(prefix, "merlot", sep = "_")
 }
+
+# check if we did this before already
 if (embed) {
   res_prefix <- paste(prefix, "emb", sep = "_")
 } else {
   res_prefix <- paste(prefix, "el", sep = "_")
 }
-print(prefix)
+if (sens) { res_prefix <- paste(res_prefix, "sens", sep = "_") }
+
+res_file <- paste(JobFolder, JobName, "_eval.txt", sep = "")
+res_name <- paste("LPGraph", res_prefix, sep = "")
+eval <- t(as.matrix(read.table(res_file, check.names=FALSE, stringsAsFactors = FALSE)))
+# print(colnames(eval))
+# print(res_name)
+if (res_name %in% colnames(eval)) {
+  stop(paste(res_name, "already evaluated!"))
+}
+
+# now reset result prefix:
+if (embed) {
+  res_prefix <- paste(prefix, "emb", sep = "_")
+} else {
+  res_prefix <- paste(prefix, "el", sep = "_")
+}
 
 various <- paste(mscripts, "/scripts/various.R", sep = "")
 evaluat <- paste(mscripts, "/scripts/evaluate_method.R", sep = "")

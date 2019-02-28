@@ -66,6 +66,14 @@ if (select == "merlot") {
   diffmap <- paste(diffmap, "_sel_seurat", sep = "")
 }
 diffmap <- paste("destiny", diffmap, sep = "")
+
+# check if present:
+res_file <- paste(JobFolder, JobName, "_eval.txt", sep = "")
+eval <- t(as.matrix(read.table(res_file, check.names=FALSE, stringsAsFactors = FALSE)))
+if (diffmap %in% colnames(eval)) {
+  stop(paste(diffmap, "already evaluated!"))
+}
+
 dif <- readRDS(file = paste(job, diffmap, sep = "_"))
 
 LOG_MESSAGE <- paste(LOG_MESSAGE, "dimensions:", dim(dif@eigenvectors), "\n")
