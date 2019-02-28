@@ -25,7 +25,7 @@ if [[ $rc == 124 ]]; then
     Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
 fi
 
-n="-n"
+n=""
 for f in "" "-f";
 do
     for b in "" "-b";

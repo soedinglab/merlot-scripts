@@ -99,7 +99,7 @@ def main(job_id, save_dir, num_brpoints):
     t.add_genes(Ms)
 
     X, pseudotime, brns, scalings = sim.sample_density(
-        t, t.num_branches * 50, alpha=alpha, beta=beta)
+        t, t.num_branches * 50 * 20, alpha=alpha, beta=beta)
     # X, pseudotime, brns, scalings = sim.sample_whole_tree(t, 1, alpha=alpha, beta=beta)
 
     save_params(job_id, save_dir, t, rseed)
