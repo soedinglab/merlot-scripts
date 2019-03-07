@@ -31,7 +31,7 @@ do
     do
         for n in "" "-n ";
         do
-            for elpi in "" "--elpi ";
+            for elpi in "" " --elpi";
             do
                 # echo "benchmark_MERLoT_dest log k fixed interp=none" $b
                 if [ -n "$b" ]; then emb="emb"; else emb="el"; fi
@@ -40,8 +40,8 @@ do
                 name="MERLoT_log_k_${fixed}_${emb}_none_knn_${par}"
                 echo "${name}" >> "${timefile}"
                 echo "${name}"
-                echo "Rscript ${scripts}/benchmark_MERLoT_dest.R -o ${out}/ -j ${job} -d ${dim} --log $b$f$n--sens --select none -t $mscripts -r knn ${elpi}"
-                { time Rscript "${scripts}"/benchmark_MERLoT_dest.R -t "${mscripts}" -o "${out}"/ -j "${job}" -d "${dim}" --log "${b}""${f}""${n}"--sens --select none -t "$mscripts" -r knn "${elpi}"; } 2>> "${timefile}"
+                echo "Rscript ${scripts}/benchmark_MERLoT_dest.R -t ${mscripts} -o ${out}/ -j ${job} -d ${dim} --log ${b}${f}${n}--sens --select none -r knn${elpi}"
+                time Rscript "${scripts}"/benchmark_MERLoT_dest.R -t "${mscripts}" -o "${out}"/ -j "${job}" -d "${dim}" --log "${b}""${f}""${n}"--sens --select none -r knn"${elpi}"# 2>> "${timefile}"
                 rc=$?
                 if [[ $rc == 124 ]]; then
                     Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
