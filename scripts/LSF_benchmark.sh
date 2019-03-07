@@ -1,6 +1,6 @@
 #!/usr/bin/bash -eux
 
-hhtree=$1     # location of merlot-scripts repository
+mscripts=$1     # location of merlot-scripts repository
 batch=$2      # name of each simulation folder
 out=$3        # name of overall output folder
 sim=$4        # which simulation suite to use (if empty only runs evaluation)
@@ -18,7 +18,7 @@ do
   do
     name=${batch}${i}
     mkdir -p "$benchmark"/"$name"
-    echo "$hhtree"/scripts/megascript.sh "$hhtree" "$name" "$benchmark"/"$name"/ "$b" "$sim" "&" >> "$sub_file"
+    echo "$mscripts"/scripts/megascript.sh "$mscripts" "$name" "$benchmark"/"$name"/ "$b" "$sim" "&" >> "$sub_file"
   done
 done
 
