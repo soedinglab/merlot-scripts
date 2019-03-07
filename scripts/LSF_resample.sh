@@ -15,7 +15,7 @@ do
   mkdir -p "$benchmark"
   for i in {0..29}
   do
-    name=${batch}${i}
+    name=${batch}${b}
     output="${benchmark}/${name}/"
     mkdir -p "${output}"
     input="${res_source}/benchmark${i}/${name}/${name}"
