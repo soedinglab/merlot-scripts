@@ -226,14 +226,20 @@ if(embed) {
   methname <- paste("_LPGraph", res_prefix, sep = "")
   # since we run many versions of the elastic tree maybe we have already calculated the scaffold tree
   if(fixed) {
-    scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1, python_location="~/miniconda3/envs/py36/bin/python")
+    scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1,
+                                      python_location="~/miniconda3/envs/py36/bin/python",
+                                      tmp_dir = JobFolder)
   } else {
     if (sens) {
       N <- length(cells)
       res_prefix <- paste(res_prefix, "sens", sep = "_")
-      scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N), python_location="~/miniconda3/envs/py36/bin/python")
+      scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N),
+                                        python_location="~/miniconda3/envs/py36/bin/python",
+                                        tmp_dir = JobFolder)
     } else {
-      scaffold <- CalculateScaffoldTree(CellCoordinates, python_location="~/miniconda3/envs/py36/bin/python")
+      scaffold <- CalculateScaffoldTree(CellCoordinates,
+                                        python_location="~/miniconda3/envs/py36/bin/python",
+                                        tmp_dir = JobFolder)
     }
   }
   
