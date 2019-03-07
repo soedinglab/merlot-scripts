@@ -11,8 +11,8 @@ dim=$((dim>2?dim:2))    # minimum number of dimensions if users somehow set this
 scripts=$mscripts/scripts
 
 # run Destiny, needed for all methods that use diffusion maps as input.
-Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -n -l -s "none"
 Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -l -s "none"
+Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -n -l -s "none"
 
 # perform local averaging for the diffusion maps
 source activate py36

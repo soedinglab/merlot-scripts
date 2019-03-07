@@ -14,24 +14,16 @@ evaluat <- paste(hhtree, "/scripts/evaluate_method.R", sep="")
 suppressPackageStartupMessages(source(various))
 suppressPackageStartupMessages(source(evaluat))
 
-main_dir <- "~/Documents/data/cluster_eval/benchmark"
+main_dir <- "~/Documents/data/big_sims/benchmark"
 bif_num = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
 methnames <- c("destiny_log_k",
-               "LPGraph_log_free_merlot_el_sens",
-               "LPGraph_log_free_elpi_el_sens",
                "LPGraph_log_free_knn_merlot_el_sens",
                "LPGraph_log_free_knn_elpi_el_sens",
-               "LPGraph_log_free_merlot_emb_sens",
-               "LPGraph_log_free_elpi_emb_sens",
                "LPGraph_log_free_knn_merlot_emb_sens",
                "LPGraph_log_free_knn_elpi_emb_sens",
-               "LPGraph_log_fixed_merlot_el",
-               "LPGraph_log_fixed_elpi_el",
                "LPGraph_log_fixed_knn_merlot_el",
                "LPGraph_log_fixed_knn_elpi_el",
-               "LPGraph_log_fixed_merlot_emb",
-               "LPGraph_log_fixed_elpi_emb",
                "LPGraph_log_fixed_knn_merlot_emb",
                "LPGraph_log_fixed_knn_elpi_emb")
 
@@ -116,7 +108,7 @@ ltys <- rep(1, length(methnames))
 # # png("/data/niko/final/benchmark_eval/joh_branching.png", width = 1000, height = 700, units = "px")
 # # svg(paste("/data/niko/final/benchmark_eval/", shortnames[f], ".svg", sep=""), height=5, width=8)
 # svg(paste("~/Documents/collaborations/gonzalo/all_branch/", shortnames[f], ".svg", sep=""), height=5, width=8)
-plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=ylims[[f]],
+plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.25, 0.9),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Branch assignment quality")
 box(which = "plot", lwd=2)
 axis(1, at=bif_num, labels = bif_num+2)
@@ -132,7 +124,7 @@ for (i in seq_along(methnames)) {
 legend("bottomleft", legend=methnames, pch=21, pt.bg = cols, pt.cex=1.5)
 
 
-plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.4, 0.9),
+plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.4, 1.0),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Pseudotime")
 box(which = "plot", lwd=2)
 axis(1, at=bif_num, labels = bif_num+2)
