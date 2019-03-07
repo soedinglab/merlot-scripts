@@ -168,7 +168,7 @@ if (embed) {
 if (sens) { res_prefix <- paste(res_prefix, "sens", sep = "_") }
 
 res_file <- paste(JobFolder, JobName, "_eval.txt", sep = "")
-res_name <- paste("LPGraph", res_prefix, sep = "")
+res_name <- paste("MERLoT", res_prefix, sep = "")
 if (file.exists(res_file)) {
   eval <- t(as.matrix(read.table(res_file, check.names=FALSE, stringsAsFactors = FALSE)))
   # print(colnames(eval))
@@ -209,7 +209,7 @@ start <- min(which(time == min(time)))
 labels <- cell_params$branches + 1
 
 if(embed) {
-  methname <- paste("_LPGraph", prefix, sep = "")
+  methname <- paste("_MERLoT", prefix, sep = "")
   methname <- paste(methname, "_el", sep = "")
 
   if (sens) {
@@ -225,7 +225,7 @@ if(embed) {
   }
 
 } else {
-  methname <- paste("_LPGraph", res_prefix, sep = "")
+  methname <- paste("_MERLoT", res_prefix, sep = "")
   # since we run many versions of the elastic tree maybe we have already calculated the scaffold tree
   if(fixed) {
     scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1,
@@ -253,7 +253,7 @@ if(embed) {
   if (reduced != "none") {
     tree <- inflate_elastic_tree(tree, FullCoordinates)
   }
-  methname <- paste("_LPGraph", res_prefix, sep = "")
+  methname <- paste("_MERLoT", res_prefix, sep = "")
   saveRDS(object = tree, file = paste(job, methname, ".elastic", sep = ""))
   saveRDS(object = scaffold, file = paste(job, methname, ".scaf", sep = ""))
 }
@@ -282,7 +282,7 @@ if(length(hhbranches) == 1) {
 
 # print(hhtimes)
 par_loc <- paste(job, "params.txt", sep = "_")
-methname <- paste("LPGraph", res_prefix, sep = "")
+methname <- paste("MERLoT", res_prefix, sep = "")
 res <- evaluate_method(methname, hhbranches, hhtimes, cell_params, par_loc)
 # print(hhres)
 if (showparams) {
