@@ -44,7 +44,7 @@ do
                     echo "${name}" >> "${timefile}"
                     echo "${name}"
                     echo Rscript "${scripts}"/benchmark_MERLoT_dest.R -o "${out}"/ -j "${job}" -d "${dim}" --log $b $f $n --sens --select "${sel}" -t "$mscripts" -r "${reduced}" "${elpi}"
-                    { time timeout 60m Rscript "${scripts}"/benchmark_MERLoT_dest.R -o "${out}"/ -j "${job}" -d "${dim}" --log $b $f $n --sens --select "${sel}" -t "$mscripts" -r "${reduced}" $elpi; } 2>> "${timefile}"
+                    { time Rscript "${scripts}"/benchmark_MERLoT_dest.R -t "${mscripts}" -o "${out}"/ -j "${job}" -d "${dim}" --log $b $f $n --sens --select "${sel}" -r "${reduced}" $elpi; } 2>> "${timefile}"
                     rc=$?
                     if [[ $rc == 124 ]]; then
                         Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
