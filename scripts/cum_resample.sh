@@ -2,19 +2,19 @@
 
 module load R/3.5.0
 mscripts="$1"   # location of merlot-scripts repository
-job="$2"      # name of each simulation folder
-input="$3"    # name of input folder (sim to resample)
-out="$4"      # name of output folder
-n="$5"        # number of bifurcations
+job="$2"        # name of each simulation folder
+input="$3"      # name of input folder (sim to resample)
+out="$4"        # name of output folder
+n="$5"          # number of bifurcations
 
 
 dim=$((n + 1)) # number of allowed dimensions
 dim=$((dim>2?dim:2))
 
-scripts=$mscripts/scripts
+scripts="${mscripts}/scripts"
 
 # resample
-bash "${scripts}/resample.sh" "$scripts" "$job" "$out" "$n" "$input"
+bash "${scripts}/resample.sh" "$mscripts" "$job" "$out" "$n" "$input"
 
 # run diffusion maps but check if they exist first
 if [[ ! -f "${out}"/"${job}"_destiny_log_k ]]; then
