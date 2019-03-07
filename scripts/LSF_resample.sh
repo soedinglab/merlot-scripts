@@ -15,10 +15,10 @@ do
   mkdir -p "$benchmark"
   for i in {0..29}
   do
-    name=${batch}${b}
+    name=${batch}${i}
     output="${benchmark}/${name}/"
     mkdir -p "${output}"
-    input="${res_source}/benchmark${i}/${name}/${name}"
+    input="${res_source}/benchmark${b}/${name}/${name}"
     echo "$mscripts/scripts/cum_resample.sh $mscripts $name $input $output $b &" >> "$sub_file"
   done
 done
