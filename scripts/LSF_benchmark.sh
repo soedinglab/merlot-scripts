@@ -32,7 +32,7 @@ for sub in sub*.sh; do
     echo "#BSUB -q mpi-long+"
     echo "#BSUB -o log.%J"
     echo "#BSUB -e log.%J"
-    echo "#BSUB -W 24:00"
+    echo "#BSUB -W 48:00"
     echo "#BSUB -n 16"
     echo "#BSUB -m hh"
     echo "#BSUB -R cbscratch"

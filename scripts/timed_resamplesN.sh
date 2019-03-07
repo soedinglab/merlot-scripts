@@ -35,14 +35,14 @@ do
             for elpi in "" "--elpi";
             do
                 # echo "benchmark_MERLoT_dest log k fixed interp=none" $b
-                if [ "$b" ]; then emb="emb"; else emb="el"; fi
-                if [ "$f" ]; then fixed="fixed"; else fixed="free"; fi
-                if [ "$elpi" ]; then par="elpi"; else par="merlot"; fi
-                name="MERLoT_log_k_"$fixed"_"$emb"_"$sel"_"$reduced"_"$par
+                if [ -n "$b" ]; then emb="emb"; else emb="el"; fi
+                if [ -n "$f" ]; then fixed="fixed"; else fixed="free"; fi
+                if [ -n "$elpi" ]; then par="elpi"; else par="merlot"; fi
+                name="MERLoT_log_k_${fixed}_${emb}_${sel}_knn_${par}"
                 echo "${name}" >> "${timefile}"
                 echo "${name}"
-                echo Rscript "${scripts}"/benchmark_MERLoT_dest.R -o "${out}"/ -j "${job}" -d "${dim}" --log $b $f $n --sens --select "${sel}" -t "$mscripts" -r knn "${elpi}"
-                { time Rscript "${scripts}"/benchmark_MERLoT_dest.R -o "${out}"/ -j "${job}" -d "${dim}" --log $b $f $n --sens --select "${sel}" -t "$mscripts" -r knn "${elpi}"; } 2>> "${timefile}"
+                echo "Rscript ${scripts}/benchmark_MERLoT_dest.R -o ${out}/ -j ${job} -d ${dim} --log $b $f $n --sens --select ${sel} -t $mscripts -r knn ${elpi}"
+                { time Rscript "${scripts}"/benchmark_MERLoT_dest.R -t "${mscripts}" -o "${out}"/ -j "${job}" -d "${dim}" --log $b $f $n --sens --select "${sel}" -t "$mscripts" -r knn "${elpi}"; } 2>> "${timefile}"
                 rc=$?
                 if [[ $rc == 124 ]]; then
                     Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
