@@ -169,11 +169,13 @@ if (sens) { res_prefix <- paste(res_prefix, "sens", sep = "_") }
 
 res_file <- paste(JobFolder, JobName, "_eval.txt", sep = "")
 res_name <- paste("LPGraph", res_prefix, sep = "")
-eval <- t(as.matrix(read.table(res_file, check.names=FALSE, stringsAsFactors = FALSE)))
-# print(colnames(eval))
-# print(res_name)
-if (res_name %in% colnames(eval)) {
-  stop(paste(res_name, "already evaluated!"))
+if (file.exists(res_file)) {
+  eval <- t(as.matrix(read.table(res_file, check.names=FALSE, stringsAsFactors = FALSE)))
+  # print(colnames(eval))
+  # print(res_name)
+  if (res_name %in% colnames(eval)) {
+    stop(paste(res_name, "already evaluated!"))
+  }
 }
 
 # now reset result prefix:

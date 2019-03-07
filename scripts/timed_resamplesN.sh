@@ -37,7 +37,7 @@ do
                 if [ -n "$b" ]; then emb="emb"; else emb="el"; fi
                 if [ -n "$f" ]; then fixed="fixed"; else fixed="free"; fi
                 if [ -n "$elpi" ]; then par="elpi"; else par="merlot"; fi
-                name="MERLoT_log_k_${fixed}_${emb}_${sel}_knn_${par}"
+                name="MERLoT_log_k_${fixed}_${emb}_none_knn_${par}"
                 echo "${name}" >> "${timefile}"
                 echo "${name}"
                 echo "Rscript ${scripts}/benchmark_MERLoT_dest.R -o ${out}/ -j ${job} -d ${dim} --log $b$f$n--sens --select none -t $mscripts -r knn ${elpi}"
