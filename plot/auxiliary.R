@@ -3,7 +3,7 @@ suppressPackageStartupMessages(library(reshape2))
 suppressPackageStartupMessages(library(scales))
 suppressPackageStartupMessages(library(plotly))
 
-hhtree <- "/path/to/merlot-scripts"
+hhtree <- "~/Documents/repos/merlot-scripts/"
 
 .pardefault <- par(no.readonly = T)
 

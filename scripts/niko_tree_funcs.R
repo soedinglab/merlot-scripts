@@ -416,3 +416,44 @@ run_merlot <- function(job, full_coords, start, funcname) {
   result <- evaluate_method(funcname, pred_branches, pred_pseudotime, cell_params, par_loc)
   return(result)
 }
+
+optimize_k <- function(data, d) {
+  opt_k <- -10
+  k_gap <- 0
+
+  pb <- txtProgressBar(min = 5, max = 100, style = 3)
+
+  print("optimizing k...")
+  for (local_k in seq(from = 5, to = 100, by = 5)) {
+    setTxtProgressBar(pb, local_k)
+    dm <- tryCatch({
+      DiffusionMap(data, density_norm = T, sigma = "local", k = local_k)
+      }
+      , error = function(cond) {
+        # LOG_MESSAGE <- paste(LOG_MESSAGE, cond, "\n")
+        # assign("LOG_MESSAGE", LOG_MESSAGE, envir = .GlobalEnv)
+        return(NULL)
+        })
+    if (is.null(dm)) {
+      next
+    }
+    eigv <- eigenvalues(dm)
+    # plot(eigv)
+    local_k_gap <- abs((eigv[d+1]-eigv[d+2]) - (eigv[d]-eigv[d+1]))
+    # print(local_k_gap)
+    if(local_k_gap > k_gap)
+    {
+      opt_k <- local_k
+      k_gap <- local_k_gap
+    }
+  }
+  close(pb)
+
+  # if (opt_k < 0) {
+  #   opt_k <- find_dm_k(dim(data)[1] - 1)
+  #   msg = paste("could not find optimal k, using", opt_k)
+  #   LOG_MESSAGE <- paste(LOG_MESSAGE, msg, "\n")
+  # }
+  print(paste("found", opt_k))
+  return(opt_k)
+}
