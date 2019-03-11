@@ -95,6 +95,7 @@ for (i in 1:length(bif_num)) {
   br_res <- br_all[,1:length(methnames)]
   br_res <- apply(br_res, 2, as.numeric)
   br_res = br_res[br_all$measure == chosen,]
+  rownames(br_res) <- br_all$experiment[br_all$measure == chosen]
   
   ti_all <- parse_cluster_output(subfolders, benchmark_dir, timenames, methnames, "time", replNA = TRUE)
   ti_all <- as.data.frame(ti_all)
@@ -104,6 +105,7 @@ for (i in 1:length(bif_num)) {
   
   bplot_list <- apply(br_res, 2, function(x) x[x>0])
   boxplot(bplot_list, main=bif_num[i], xaxt = "n",  xlab = "")
+  abline(h = leg_res[b, "LPGraph_log_k_free_emb_sens"], col="red")
   axis(1, labels = FALSE, at = seq_along(methnames))
   text(x = seq_along(methnames), y = par("usr")[3] + 0.5, srt = 90, adj = 1,
        labels = methnames, xpd = TRUE)
@@ -113,11 +115,11 @@ for (i in 1:length(bif_num)) {
   q = qnorm(0.975)
   k <- which(res$X == bif_num[i])
   for (m in methnames) {
-    res[k, m] = mean(br_res[,m])
-    err[k, m] = q * sqrt(var(br_res[,m])) / 10
+    res[k, m] = mean(br_res[,m][br_res[,m]>0])
+    err[k, m] = q * sqrt(var(br_res[,m][br_res[,m]>0])) / 10
     
-    tres[k, m] = mean(ti_res[, m])
-    terr[k, m] = q * sqrt(var(ti_res[,m])) / 10
+    tres[k, m] = mean(ti_res[, m][br_res[,m]>0])
+    terr[k, m] = q * sqrt(var(ti_res[,m][br_res[,m]>0])) / 10
   }
   
   # q = qnorm(0.975)

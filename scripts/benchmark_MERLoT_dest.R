@@ -233,7 +233,7 @@ if(embed) {
                                       tmp_dir = JobFolder)
   } else {
     if (sens) {
-      N <- length(cells)
+      N <- dim(CellCoordinates)[1]
       res_prefix <- paste(res_prefix, "sens", sep = "_")
       scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N),
                                         python_location="~/miniconda3/envs/py36/bin/python",
