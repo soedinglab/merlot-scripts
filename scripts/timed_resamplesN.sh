@@ -19,7 +19,7 @@ touch "${timefile}"
 name="destiny_log_k"
 echo "${name}"
 echo "${name}" > "${timefile}"
-{ time timeout 60m Rscript "${scripts}"/benchmark_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -l -n -t "$mscripts"; } 2>> "${timefile}"
+{ time Rscript "${scripts}"/benchmark_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -l -n -t "$mscripts"; } 2>> "${timefile}"
 rc=$?
 if [[ $rc == 124 ]]; then
     Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
@@ -50,4 +50,16 @@ do
             done
         done
     done
+done
+
+# slingshot
+possible=$(find "${out}" -maxdepth 1 -type f | grep "\." -v | grep "${job}")
+for line in $possible; do
+    name="slingshot "$line
+    echo "${name}" >> "${timefile}"
+    { time Rscript "${scripts}"/benchmark_slingshot.R -o "${out}"/ -j "${job}" -d "${dim}" -i "${line}" -t "$mscripts"; } 2>> "${timefile}"
+    rc=$?
+    if [[ $rc == 124 ]]; then
+        Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
+    fi
 done
