@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 library(igraph)
 
-evaluate_method <- function(method, mbranches, mtimes, cells_params, par_loc, returnNA=FALSE) {
+evaluate_method <- function(method, mbranches, mtimes, cell_params, par_loc, returnNA=FALSE) {
 
   funclist <- list()
   funclist[[1]] <- randInd_manual

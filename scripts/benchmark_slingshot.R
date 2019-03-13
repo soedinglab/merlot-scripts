@@ -89,7 +89,7 @@ mstree <- graph_from_adjacency_matrix(adj_matrix, mode = "undirected")
 # to form branch assignments for each cell
 cells2nodes <- mod1$classification
 centroids <- t(mod1$parameters$mean)
-clusterid <- as.numeric(sds@clusterLabels)
+clusterid <- as.numeric(cells2nodes)
 sling_branches <- assign_branches(mstree, clusterid, centroids, CellCoordinates)
 
 # predict pseudotime per trajectory for each cell
