@@ -81,8 +81,8 @@ mod1 <- Mclust(CellCoordinates, x = mclusters)
 sds <- getLineages(CellCoordinates, mod1$classification, start.clus = mod1$classification[start])
 
 # get connectivity of clusters and re-create the MST
-nodes_order <- order(as.numeric(colnames(sds@connectivity)))
-adj_matrix <- sds@connectivity[nodes_order, nodes_order]
+nodes_order <- order(as.numeric(colnames(sds@adjacency)))
+adj_matrix <- sds@adjacency[nodes_order, nodes_order]
 mstree <- graph_from_adjacency_matrix(adj_matrix, mode = "undirected")
 
 # map cells to clusters, get cluster centroids and collapse co-linear clusters
@@ -94,7 +94,7 @@ sling_branches <- assign_branches(mstree, clusterid, centroids, CellCoordinates)
 
 # predict pseudotime per trajectory for each cell
 sds <- getCurves(sds)
-traj_pseudotime <- pseudotime(sds)
+traj_pseudotime <- slingPseudotime(sds)
 # average over the different trajectories for global pt. This is ok to do, because:
 # 1. all trajectories start at the same cell, so we are averaging geodesic distances from the same point
 # 2. if cell c doesn't belong to trajectory t it doesn't get a pseudotime for it
