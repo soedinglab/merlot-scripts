@@ -112,25 +112,25 @@ for (i in 1:length(bif_num)) {
   
   
   
-  q = qnorm(0.975)
-  k <- which(res$X == bif_num[i])
-  for (m in methnames) {
-    res[k, m] = mean(br_res[,m][br_res[,m]>0])
-    err[k, m] = q * sqrt(var(br_res[,m][br_res[,m]>0])) / 10
-    
-    tres[k, m] = mean(ti_res[, m][br_res[,m]>0])
-    terr[k, m] = q * sqrt(var(ti_res[,m][br_res[,m]>0])) / 10
-  }
-  
   # q = qnorm(0.975)
   # k <- which(res$X == bif_num[i])
   # for (m in methnames) {
-  #   res[k, m] = mean(br_res[,m])
-  #   err[k, m] = q * sqrt(var(br_res[,m])) / 10
+  #   res[k, m] = mean(br_res[,m][br_res[,m]>0])
+  #   err[k, m] = q * sqrt(var(br_res[,m][br_res[,m]>0])) / 10
   #   
-  #   tres[k, m] = mean(ti_res[, m])
-  #   terr[k, m] = q * sqrt(var(ti_res[,m])) / 10
+  #   tres[k, m] = mean(ti_res[, m][br_res[,m]>0])
+  #   terr[k, m] = q * sqrt(var(ti_res[,m][br_res[,m]>0])) / 10
   # }
+  
+  q = qnorm(0.975)
+  k <- which(res$X == bif_num[i])
+  for (m in methnames) {
+    res[k, m] = mean(br_res[,m])
+    err[k, m] = q * sqrt(var(br_res[,m])) / 10
+
+    tres[k, m] = mean(ti_res[, m])
+    terr[k, m] = q * sqrt(var(ti_res[,m])) / 10
+  }
 }
 
 
@@ -141,10 +141,26 @@ downs = res - err
 tups = tres + terr
 tdowns = tres - terr
 
-cols = gg_color_hue(length(methnames))
-pchs <- rep(20, length(methnames))
-ltys <- rep(1, length(methnames))
+m <- "LPGraph_log_k_fixed_emb"
+res[, m] <- leg_res[, m]
+downs[, m] <- leg_downs[, m]
+ups[, m] <- leg_ups[, m]
+tres[, m] <- leg_tres[, m]
+tdowns[, m] <- leg_tdowns[, m]
+tups[, m] <- leg_tups[, m]
 
+m <- "LPGraph_log_k_free_emb_sens"
+res[, m] <- leg_res[, m]
+downs[, m] <- leg_downs[, m]
+ups[, m] <- leg_ups[, m]
+tres[, m] <- leg_tres[, m]
+tdowns[, m] <- leg_tdowns[, m]
+tups[, m] <- leg_tups[, m]
+
+extended_methnames <- c(methnames, "LPGraph_log_k_fixed_emb", "LPGraph_log_k_free_emb_sens")
+cols = c(gg_color_hue(length(methnames)), "black", "gray")
+
+png("/home/npapado/Documents/presentations/2019-04_benchmark_knn/branch_fixed.png")
 # plot fixed methods
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.25, 0.9),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Branch assignment quality")
@@ -152,25 +168,25 @@ box(which = "plot", lwd=2)
 axis(1, at=bif_num, labels = bif_num+2)
 axis(2, at=c(-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1.), labels = c(-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1))
 
-m <- "LPGraph_log_k_fixed_emb"
-points(bif_num, leg_res[, m], pch=20, col="black", type="b", lwd=3, cex=1.5)
-arrows(x0 = bif_num, y0 = leg_downs[, m], y1=leg_ups[, m], code=3, angle=90, length=0.1, col="black")
-for (i in seq_along(methnames)) {
-  m = methnames[i]
+for (i in seq_along(extended_methnames)) {
+  m = extended_methnames[i]
   if (!grepl("fixed", m)) {
     next
   }
+  print(m)
   mc = cols[i]
-  points(bif_num, res[, m], pch=pchs[i], col=mc, type="b", lwd=3, cex=1.5, lty=ltys[i])
+  points(bif_num, res[, m], pch=20, col=mc, type="b", lwd=3, cex=1.5, lty=1)
   arrows(x0 = bif_num, y0 = downs[, m], y1=ups[, m],
          code=3, angle=90, length=0.1, col=mc)
 }
 fixed <- grepl("fixed", methnames)
 legend("bottomright", legend=c("legacy", methtitles[fixed]), pch=21,
        pt.bg = c("black", cols[fixed]), pt.cex=1.5, ncol=2)
+dev.off()
 
 
 # plot free methods
+png("/home/npapado/Documents/presentations/2019-04_benchmark_knn/pseudotime_fixed.png")
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.25, 0.9),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Branch assignment quality")
 box(which = "plot", lwd=2)
@@ -185,19 +201,23 @@ for (i in seq_along(methnames)) {
   if (!grepl("free", m)) {
     next
   }
+  if (!grepl("_k_", m)) {
+    next
+  }
   mc = cols[i]
   points(bif_num, res[, m], pch=pchs[i], col=mc, type="b", lwd=3, cex=1.5, lty=ltys[i])
   arrows(x0 = bif_num, y0 = downs[, m], y1=ups[, m],
          code=3, angle=90, length=0.1, col=mc)
 }
-free <- grepl("free", methnames)
-legend("topright", legend=c("legacy", methtitles[free]), pch=21,
-       pt.bg = c("black", cols[free]), pt.cex=1.5, ncol = 3)
-
+free_k <- grepl("k_free", methnames)
+legend("bottom", legend=c("legacy", methtitles[free_k]), pch=21,
+       pt.bg = c("black", cols[free_k]), pt.cex=1.5, ncol = 1)
+dev.off()
 
 
 
 # plot fixed pseudotime
+png("/home/npapado/Documents/presentations/2019-04_benchmark_knn/pseudotime_fixed.png")
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.4, 1.0),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Pseudotime")
 box(which = "plot", lwd=2)
@@ -219,11 +239,12 @@ for (i in seq_along(methnames)) {
 }
 fixed <- grepl("fixed", methnames)
 legend("bottom", legend=c("legacy", methtitles[fixed]), pch=21,
-       pt.bg = c("black", cols[fixed]), pt.cex=1.5)
-
+       pt.bg = c("black", cols[fixed]), pt.cex=1.5, ncol=2)
+dev.off()
 
 
 # plot free pseudotime
+png("/home/npapado/Documents/presentations/2019-04_benchmark_knn/pseudotime_free.png")
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.4, 1.0),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Pseudotime")
 box(which = "plot", lwd=2)
@@ -245,23 +266,36 @@ for (i in seq_along(methnames)) {
 }
 fixed <- grepl("free", methnames)
 legend("bottom", legend=c("legacy", methtitles[fixed]), pch=21,
-       pt.bg = c("black", cols[fixed]), pt.cex=1.5)
+       pt.bg = c("black", cols[fixed]), pt.cex=1.5, ncol = 2)
+dev.off()
 
 
 
+# error_bars <- ups - downs
+# error_bars$X <- 1:10
+# melted_error <- melt(error_bars, id.vars = 1)
+melted <- melt(res, id.vars = 1)
+# melted[, "error"] <- melted_error$value
+
+plot_ly(melted, x = ~X, y = ~value, #error_y = ~list(array = error),
+        type = "scatter",
+        mode="markers+lines",
+        colors = cols,
+        color = ~variable) %>%
+layout(title = "Average branch assignment performance",
+       xaxis = list(title = "#bifurcations"),
+       yaxis = list (title = "adjusted MI", range=c(0, 1)))
 
 
-
-
-
-
-
-
-p <- plot_ly(type = "scatter", mode="markers+lines") %>%
-  layout(title = "Average branch assignment performance",
+melted <- melt(tres, id.vars = 1)
+plot_ly(melted, x = ~X, y = ~value,
+        type = "scatter",
+        mode="markers+lines",
+        colors = cols,
+        color = ~variable) %>%
+  layout(title = "Average pseudotime prediction performance",
          xaxis = list(title = "#bifurcations"),
-         yaxis = list (title = "adjusted MI", range=c(0, 1)))
-for (i in seq_along(methnames)) {
-  p <- add_trace(p, x=1:10, y=res[,methnames[i]], name=methtitles[i])
-}
-p
+         yaxis = list (title = "Longest Path GK index", range=c(0., 1)))
+
+
+
