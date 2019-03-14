@@ -1,10 +1,12 @@
+#!/usr/bin/bash -eux
+
+#BSUB -q mpi-long+
+#BSUB -o log.%J
+#BSUB -e log.%J
+#BSUB -W 48:00
+#BSUB -n 16
+#BSUB -m hh
+#BSUB -R cbscratch
+#BSUB -R "span[ptile=16]"
+
 time Rscript /home/users/npapado/bin/merlot-scripts/scripts/benchmark_slingshot.R -o /cbscratch/npapado/resample/benchmark1 -j sim3 -d 2 -i /cbscratch/npapado/resample/benchmark1/sim3/sim3_destiny_log_k -t /home/users/npapado/bin/merlot-scripts; 2>> /cbscratch/npapado/resample/benchmark1/sim3/sim3.exec
-time Rscript /home/users/npapado/bin/merlot-scripts/scripts/benchmark_slingshot.R -o /cbscratch/npapado/resample/benchmark1 -j sim56 -d 2 -i /cbscratch/npapado/resample/benchmark1/sim56/sim56_destiny_log_k -t /home/users/npapado/bin/merlot-scripts; 2>> /cbscratch/npapado/resample/benchmark1/sim56/sim56.exec
-time Rscript /home/users/npapado/bin/merlot-scripts/scripts/benchmark_slingshot.R -o /cbscratch/npapado/resample/benchmark5 -j sim0 -d 6 -i /cbscratch/npapado/resample/benchmark5/sim0/sim0_destiny_log_k -t /home/users/npapado/bin/merlot-scripts; 2>> /cbscratch/npapado/resample/benchmark5/sim0/sim0.exec
-time Rscript /home/users/npapado/bin/merlot-scripts/scripts/benchmark_slingshot.R -o /cbscratch/npapado/resample/benchmark5 -j sim11 -d 6 -i /cbscratch/npapado/resample/benchmark5/sim11/sim11_destiny_log_k -t /home/users/npapado/bin/merlot-scripts; 2>> /cbscratch/npapado/resample/benchmark5/sim11/sim11.exec
-time Rscript /home/users/npapado/bin/merlot-scripts/scripts/benchmark_slingshot.R -o /cbscratch/npapado/resample/benchmark5 -j sim2 -d 6 -i /cbscratch/npapado/resample/benchmark5/sim2/sim2_destiny_log_k -t /home/users/npapado/bin/merlot-scripts; 2>> /cbscratch/npapado/resample/benchmark5/sim2/sim2.exec
-time Rscript /home/users/npapado/bin/merlot-scripts/scripts/benchmark_slingshot.R -o /cbscratch/npapado/resample/benchmark5 -j sim34 -d 6 -i /cbscratch/npapado/resample/benchmark5/sim34/sim34_destiny_log_k -t /home/users/npapado/bin/merlot-scripts; 2>> /cbscratch/npapado/resample/benchmark5/sim34/sim34.exec
-time Rscript /home/users/npapado/bin/merlot-scripts/scripts/benchmark_slingshot.R -o /cbscratch/npapado/resample/benchmark5 -j sim35 -d 6 -i /cbscratch/npapado/resample/benchmark5/sim35/sim35_destiny_log_k -t /home/users/npapado/bin/merlot-scripts; 2>> /cbscratch/npapado/resample/benchmark5/sim35/sim35.exec
-time Rscript /home/users/npapado/bin/merlot-scripts/scripts/benchmark_slingshot.R -o /cbscratch/npapado/resample/benchmark5 -j sim51 -d 6 -i /cbscratch/npapado/resample/benchmark5/sim51/sim51_destiny_log_k -t /home/users/npapado/bin/merlot-scripts; 2>> /cbscratch/npapado/resample/benchmark5/sim51/sim51.exec
-time Rscript /home/users/npapado/bin/merlot-scripts/scripts/benchmark_slingshot.R -o /cbscratch/npapado/resample/benchmark5 -j sim5 -d 6 -i /cbscratch/npapado/resample/benchmark5/sim5/sim5_destiny_log_k -t /home/users/npapado/bin/merlot-scripts; 2>> /cbscratch/npapado/resample/benchmark5/sim5/sim5.exec
-time Rscript /home/users/npapado/bin/merlot-scripts/scripts/benchmark_slingshot.R -o /cbscratch/npapado/resample/benchmark5 -j sim66 -d 6 -i /cbscratch/npapado/resample/benchmark5/sim66/sim66_destiny_log_k -t /home/users/npapado/bin/merlot-scripts; 2>> /cbscratch/npapado/resample/benchmark5/sim66/sim66.exec
