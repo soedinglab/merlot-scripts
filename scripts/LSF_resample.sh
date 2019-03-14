@@ -13,7 +13,7 @@ for b in {1..10}
 do
   benchmark="$out"/benchmark$b
   mkdir -p "$benchmark"
-  for i in {0..29}
+  for i in {0..99}
   do
     name=${batch}${i}
     output="${benchmark}/${name}/"
