@@ -64,6 +64,9 @@ for (i in 1:length(bif_num)) {
   br_res <- apply(br_res, 2, as.numeric)
   br_res = br_res[br_all$measure == chosen,]
   rownames(br_res) <- br_all$experiment[br_all$measure == chosen]
+  # View(br_res)
+  # sum(br_res[, "slingshot_destiny_log_k"] < br_res[, "slingshot_destiny_log"] & br_res[, "slingshot_destiny_log_k"] > 0)
+  # sum(br_res[, "slingshot_destiny_log_k"] > br_res[, "slingshot_destiny_log"])
   
   ti_all <- parse_cluster_output(subfolders, benchmark_dir, timenames, methnames, "time", replNA = TRUE)
   ti_all <- as.data.frame(ti_all)
