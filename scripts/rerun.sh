@@ -1,5 +1,7 @@
 #!/usr/bin/bash -eux
 
+outfile=$1
+touch "$outfile"
 mscripts="/home/users/npapado/bin/merlot-scripts"
 
 bench="benchmark1"
@@ -14,7 +16,7 @@ for sim in "${sims[@]}";
 do
     input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}"
+    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}" >> "$outfile"
 done
 
 ###############################
@@ -41,7 +43,7 @@ for sim in "${sims[@]}";
 do
     input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}"
+    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}" >> "$outfile"
 done
 
 ###############################
@@ -90,7 +92,7 @@ for sim in "${sims[@]}";
 do
     input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}"
+    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}" >> "$outfile"
 done
 
 ###############################
@@ -157,7 +159,7 @@ for sim in "${sims[@]}";
 do
     input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}"
+    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}" >> "$outfile"
 done
 
 ###############################
@@ -243,7 +245,7 @@ for sim in "${sims[@]}";
 do
     input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}"
+    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}" >> "$outfile"
 done
 
 ###############################
@@ -336,7 +338,7 @@ for sim in "${sims[@]}";
 do
     input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}"
+    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}" >> "$outfile"
 done
 
 ###############################
@@ -433,6 +435,28 @@ for sim in "${sims[@]}";
 do
     input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}"
+    echo "time Rscript $mscripts/scripts/benchmark_slingshot.R -o ${out} -j ${sim} -d ${dim} -i $input -t ${mscripts}; 2>> ${timefile}" >> "$outfile"
 done
 
+
+split -l 16 --additional-suffix .sh -d "$outfile" sub
+
+for sub in sub*.sh; do
+  code=$(cat "$sub")
+  echo "#!/usr/bin/bash -eux" > "$sub"
+  {
+    echo ""
+    echo "#BSUB -q mpi-long+"
+    echo "#BSUB -o log.%J"
+    echo "#BSUB -e log.%J"
+    echo "#BSUB -W 100:00"
+    echo "#BSUB -n 16"
+    echo "#BSUB -m hh"
+    echo "#BSUB -R cbscratch"
+    echo "#BSUB -R \"span[ptile=16]\""
+    echo ""
+    echo "$code"
+    echo ""
+    echo "wait"
+  } >> "$sub"
+done
