@@ -23,7 +23,6 @@ done
 bench="benchmark5"
 dim=6
 sims=(
-    sim0
     sim11
     sim2
     sim34
