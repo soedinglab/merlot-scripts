@@ -44,8 +44,8 @@ scripts="${mscripts}/scripts"
 # fi
 
 # run monocle
-# Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" --unconstrained -s none
-# Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" -d "${dim}" -s none
+Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" --unconstrained -s none
+Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" -d "${dim}" -s none
 
 # run predictions and benchmark them
 bash "${scripts}"/timed_resamplesN.sh "${mscripts}" "${out}"/ "${job}" "${dim}"
