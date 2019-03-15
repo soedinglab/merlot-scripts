@@ -455,6 +455,7 @@ for sub in sub*.sh; do
     echo "#BSUB -R cbscratch"
     echo "#BSUB -R \"span[ptile=16]\""
     echo ""
+    echo "module load R/3.5.0"
     echo "$code"
     echo ""
     echo "wait"
