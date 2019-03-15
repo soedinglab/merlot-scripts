@@ -21,7 +21,8 @@ methnames <- c("destiny_log_k",
                "MERLoT_log_k_free_knn_elpi_emb_sens",
                "MERLoT_log_k_fixed_knn_elpi_emb",
                "slingshot_destiny_log_k",
-               "slingshot_destiny_log")
+               "slingshot_destiny_log",
+               "monocl2")
 
 res = data.frame(matrix(data=0, ncol=length(methnames)+1, nrow=length(bif_num)))
 colnames(res) = c("X", methnames)
@@ -64,9 +65,9 @@ for (i in 1:length(bif_num)) {
   br_res <- apply(br_res, 2, as.numeric)
   br_res = br_res[br_all$measure == chosen,]
   rownames(br_res) <- br_all$experiment[br_all$measure == chosen]
-  # View(br_res)
-  # sum(br_res[, "slingshot_destiny_log_k"] < br_res[, "slingshot_destiny_log"] & br_res[, "slingshot_destiny_log_k"] > 0)
-  # sum(br_res[, "slingshot_destiny_log_k"] > br_res[, "slingshot_destiny_log"])
+  View(br_res)
+  sum(br_res[, "slingshot_destiny_log_k"] < br_res[, "slingshot_destiny_log"] & br_res[, "slingshot_destiny_log_k"] > 0)
+  sum(br_res[, "slingshot_destiny_log_k"] > br_res[, "slingshot_destiny_log"])
   
   ti_all <- parse_cluster_output(subfolders, benchmark_dir, timenames, methnames, "time", replNA = TRUE)
   ti_all <- as.data.frame(ti_all)
