@@ -67,7 +67,7 @@ touch "${timefile}"
 # monocle2, as-is
 name="monocl2"
 echo "${name}" >> "${timefile}"
-{ time timeout 60m Rscript "${scripts}"/benchmark_monocl2.R -o "${out}"/ -j "${job}" -d "${dim}" -t "$mscripts"; } 2>> "${timefile}"
+{ time Rscript "${scripts}"/benchmark_monocl2.R -o "${out}"/ -j "${job}" -d "${dim}" -t "$mscripts"; } 2>> "${timefile}"
 rc=$?
 if [[ $rc == 124 ]]; then
     Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
@@ -76,7 +76,7 @@ fi
 # monocle2 with only 2 dimensions
 name="monocl2_unc"
 echo "${name}" >> "${timefile}"
-{ time timeout 60m Rscript "${scripts}"/benchmark_monocl2.R -o "${out}"/ -j "${job}" --unconstrained -t "$mscripts"; } 2>> "${timefile}"
+{ time Rscript "${scripts}"/benchmark_monocl2.R -o "${out}"/ -j "${job}" --unconstrained -t "$mscripts"; } 2>> "${timefile}"
 rc=$?
 if [[ $rc == 124 ]]; then
     Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
