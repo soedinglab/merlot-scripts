@@ -40,9 +40,9 @@ sims=(
 out="/cbscratch/npapado/resample/$bench"
 for sim in "${sims[@]}";
 do
-    input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts}; 2>> ${timefile} &" >> "$outfile"
+    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none"
+    # echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts} 2>> ${timefile} &" >> "$outfile"
 done
 
 ###############################
@@ -100,9 +100,9 @@ sims=(
 out="/cbscratch/npapado/resample/$bench"
 for sim in "${sims[@]}";
 do
-    input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts}; 2>> ${timefile} &" >> "$outfile"
+    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none"
+    # echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts} 2>> ${timefile} &" >> "$outfile"
 done
 
 ###############################
@@ -165,9 +165,9 @@ sims=(
 out="/cbscratch/npapado/resample/$bench"
 for sim in "${sims[@]}";
 do
-    input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts}; 2>> ${timefile} &" >> "$outfile"
+    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none"
+    # echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts} 2>> ${timefile} &" >> "$outfile"
 done
 
 ###############################
@@ -243,15 +243,15 @@ sims=(
 out="/cbscratch/npapado/resample/$bench"
 for sim in "${sims[@]}";
 do
-    input="/cbscratch/npapado/resample/$bench/$sim/${sim}_destiny_log_k"
     timefile="${out}/${sim}/${sim}.exec"
-    echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts}; 2>> ${timefile} &" >> "$outfile"
+    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none"
+    # echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts} 2>> ${timefile} &" >> "$outfile"
 done
 
 
 split -l 16 --additional-suffix .sh -d "$outfile" sub
 
-for sub in sub*.sh; do
+for sub in ./sub*.sh; do
   code=$(cat "$sub")
   echo "#!/usr/bin/bash -eux" > "$sub"
   {
