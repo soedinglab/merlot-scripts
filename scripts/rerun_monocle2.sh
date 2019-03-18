@@ -41,7 +41,7 @@ out="/cbscratch/npapado/resample/$bench"
 for sim in "${sims[@]}";
 do
     timefile="${out}/${sim}/${sim}.exec"
-    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none"
+    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none" >> "$outfile"
     # echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts} 2>> ${timefile} &" >> "$outfile"
 done
 
@@ -101,7 +101,7 @@ out="/cbscratch/npapado/resample/$bench"
 for sim in "${sims[@]}";
 do
     timefile="${out}/${sim}/${sim}.exec"
-    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none"
+    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none" >> "$outfile"
     # echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts} 2>> ${timefile} &" >> "$outfile"
 done
 
@@ -166,7 +166,7 @@ out="/cbscratch/npapado/resample/$bench"
 for sim in "${sims[@]}";
 do
     timefile="${out}/${sim}/${sim}.exec"
-    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none"
+    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none" >> "$outfile"
     # echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts} 2>> ${timefile} &" >> "$outfile"
 done
 
@@ -244,7 +244,7 @@ out="/cbscratch/npapado/resample/$bench"
 for sim in "${sims[@]}";
 do
     timefile="${out}/${sim}/${sim}.exec"
-    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none"
+    echo "Rscript ${mscripts}/scripts/run_monocle.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -s none" >> "$outfile"
     # echo "time Rscript $mscripts/scripts/benchmark_monocl2.R -o ${out}/${sim}/ -j ${sim} -d ${dim} -t ${mscripts} 2>> ${timefile} &" >> "$outfile"
 done
 
