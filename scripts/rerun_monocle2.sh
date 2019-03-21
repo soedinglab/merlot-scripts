@@ -34,9 +34,6 @@ sims=(
     sim13
     sim2
     sim35
-    sim44
-    sim63
-    sim65
     sim75
 )
 
@@ -54,25 +51,12 @@ done
 bench="benchmark10"
 dim=11
 sims=(
-    sim0
     sim17
-    sim18
     sim19
-    sim24
-    sim28
-    sim30
     sim34
     sim45
     sim46
-    sim53
     sim62
-    sim63
-    sim67
-    sim68
-    sim73
-    sim79
-    sim86
-    sim90
     sim91
 )
 
