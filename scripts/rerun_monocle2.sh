@@ -11,15 +11,9 @@ bench="benchmark8"
 dim=9
 sims=(
     sim12
-    sim18
-    sim5
     sim62
-    sim64
     sim65
-    sim66
     sim71
-    sim7
-    sim81
     sim92
 )
 
@@ -38,25 +32,12 @@ bench="benchmark9"
 dim=10
 sims=(
     sim13
-    sim16
-    sim17
-    sim25
-    sim29
     sim2
     sim35
-    sim37
-    sim39
     sim44
-    sim46
-    sim50
-    sim61
     sim63
     sim65
-    sim69
     sim75
-    sim76
-    sim81
-    sim91
 )
 
 out="/cbscratch/npapado/resample/$bench"
@@ -74,27 +55,16 @@ bench="benchmark10"
 dim=11
 sims=(
     sim0
-    sim10
     sim17
     sim18
     sim19
-    sim1
-    sim22
     sim24
     sim28
     sim30
     sim34
-    sim35
-    sim3
-    sim42
-    sim44
     sim45
     sim46
-    sim50
     sim53
-    sim57
-    sim58
-    sim61
     sim62
     sim63
     sim67
@@ -102,7 +72,6 @@ sims=(
     sim73
     sim79
     sim86
-    sim87
     sim90
     sim91
 )

@@ -1,53 +1,79 @@
-library(igraph)
-library(mclust, quietly = TRUE)
-library(slingshot)
-source("~/Documents/repos/merlot-scripts/scripts/clusters_to_branches.R")
+LOG_MESSAGE <- ""
 
-benchmark <- "benchmark5"
-sim <- "sim0"
+monocle_dimensions <- function(data, dimensions, auto_params=TRUE) {
+  if (dimensions < 2) {
+    return (NA)
+  }
+  tryCatch( {
+    tmp = reduceDimension(data, max_components = dimensions,
+                          auto_param_selection = auto_params)
+    
+    LOG_MESSAGE <- paste(LOG_MESSAGE, "ran with", dimensions,
+                         "dimensions, auto_param_selection =", auto_params, "\n")
+    assign("LOG_MESSAGE", LOG_MESSAGE, envir = .GlobalEnv)
+    return (tmp)
+  },
+  error = function(cond) {
+    LOG_MESSAGE <- paste(LOG_MESSAGE, cond, "\n")
+    assign("LOG_MESSAGE", LOG_MESSAGE, envir = .GlobalEnv)
+    
+    if (!auto_params) {
+      LOG_MESSAGE <- paste(LOG_MESSAGE, dimensions,
+                           "dimensions are too many, trying with", dimensions-1, "\n")
+      assign("LOG_MESSAGE", LOG_MESSAGE, envir = .GlobalEnv)
+      
+      return (monocle_dimensions(data, dimensions-1))
+    } else {
+      LOG_MESSAGE <- paste(LOG_MESSAGE, dimensions,
+                           "trying with auto_params=F\n")
+      assign("LOG_MESSAGE", LOG_MESSAGE, envir = .GlobalEnv)
+      
+      return (monocle_dimensions(data, dimensions, auto_params = FALSE))
+    }
+  })
+}
+
+library(monocle)
+
+benchmark <- "benchmark8"
+dimensions=9
+sim <- "sim18"
 job <- paste("~/Documents/data/examine", benchmark, sim, sim, sep="/")
 
-dm <- readRDS(paste(job, "destiny_log_k", sep="_"))
-CellCoordinates <- dm@eigenvectors[, 1:6]
 cell_params <- read.table(file = paste(job, "cellparams.txt", sep = "_"), sep = "\t", header = T, row.names = 1)
 time <- cell_params$pseudotime - min(cell_params$pseudotime) + 1
 start <- min(which(time == min(time)))
 labels <- cell_params$branches + 1
 
-# mclusters <- mclustBIC(CellCoordinates, G = 5:50)
-# mod1 <- Mclust(CellCoordinates, x = mclusters)
-# 
-# # use clusters to get lineages
-# # specify the cluster of cell 1 as start to get best pseudotime results
-# sds <- getLineages(CellCoordinates, mod1$classification, start.clus = mod1$classification[start])
-# 
-# # get connectivity of clusters and re-create the MST
-# nodes_order <- order(as.numeric(colnames(sds@adjacency)))
-# adj_matrix <- sds@adjacency[nodes_order, nodes_order]
-# mstree <- graph_from_adjacency_matrix(adj_matrix, mode = "undirected")
-# 
-# # map cells to clusters, get cluster centroids and collapse co-linear clusters
-# # to form branch assignments for each cell
-# cells2nodes <- mod1$classification
-# centroids <- t(mod1$parameters$mean)
-# clusterid <- as.numeric(cells2nodes)
-# sling_branches <- assign_branches(mstree, clusterid, centroids, CellCoordinates)
-# 
-# # predict pseudotime per trajectory for each cell
-# sds <- getCurves(sds)
-# sling <- sds
+full <- read.table(file=paste(job, "simulation.txt", sep="_"), sep="\t", header=T, row.names=1, stringsAsFactors=T)
 
-which_sling <- "slingshot_destiny_log_k"
-sling <- readRDS(paste(job, which_sling, sep="_"))
-interpreted <- read.table(paste(job, which_sling, "branches.csv", sep="_"), sep=",", header = T)
+exprs <- t(as.matrix(full))
+data <- newCellDataSet(exprs, expressionFamily = negbinomial(), lowerDetectionLimit = 1)
 
-predicted_labels <- as.factor(apply(sling@clusterLabels, 1, function(x) names(which(x == 1))))
+# run monocle ----
+data <- estimateSizeFactors(data)
+data <- estimateDispersions(data)
+data <- detectGenes(data, min_expr=0.1)
+disp_table <- dispersionTable(data)
+ordering_genes <- subset(disp_table, mean_expression >= 0.5 & dispersion_empirical >= 2*dispersion_fit)$gene_id
+data <- setOrderingFilter(data, ordering_genes)
+data <- monocle_dimensions(data, dimensions)
+data <- orderCells(data, reverse=FALSE)
+
+# where <- paste(job, "_monocl2", sep = "")
+# data <- readRDS(where)
+
+mbranches <- pData(data)$State
+mtimes <- pData(data)$Pseudotime
+
+coords <- t(reducedDimS(data))
+plot(coords, pch=16, col=mbranches)
+plot(coords, pch=16, col=labels)
 
 
-par(mfrow=c(1,2))
-plot(reducedDims(sling), col = predicted_labels, pch=16, asp = 1)
-lines(sling, lwd=2, type = 'lineages', col="black")
 
-plot(reducedDims(sling), col = interpreted$x, pch=16, asp = 1)
-lines(sling, lwd=2, type = 'lineages', col="black")
-par(mfrow=c(1,1))
+
+
+
+
+
