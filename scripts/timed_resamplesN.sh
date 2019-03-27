@@ -16,53 +16,53 @@ source deactivate py36
 touch "${timefile}"
 
 # destiny in log space with and without k optimization
-# name="destiny_log_k"
-# echo "${name}"
-# echo "${name}" > "${timefile}"
-# { time Rscript "${scripts}"/benchmark_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -l -n -t "$mscripts"; } 2>> "${timefile}"
-# rc=$?
-# if [[ $rc == 124 ]]; then
-#     Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
-# fi
+name="destiny_log_k"
+echo "${name}"
+echo "${name}" > "${timefile}"
+{ time Rscript "${scripts}"/benchmark_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -l -n -t "$mscripts"; } 2>> "${timefile}"
+rc=$?
+if [[ $rc == 124 ]]; then
+    Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
+fi
 
-# for f in "" "-f";
-# do
-#     for b in "" "-b";
-#     do
-#         for n in "" "-n";
-#         do
-#             for elpi in "" "--elpi";
-#             do
-#                 # echo "benchmark_MERLoT_dest log k fixed interp=none" $b
-#                 if [ -n "$b" ]; then emb="emb"; else emb="el"; fi
-#                 if [ -n "$f" ]; then fixed="fixed"; else fixed="free"; fi
-#                 if [ -n "$elpi" ]; then par="elpi"; else par="merlot"; fi
-#                 name="MERLoT_log_k_${fixed}_${emb}_none_knn_${par}"
-#                 echo "${name}" >> "${timefile}"
-#                 echo "${name}"
-#                 PARAMS="${b} ${f} ${n} ${elpi}"
-#                 echo Rscript "${scripts}"/benchmark_MERLoT_dest.R -t "${mscripts}" -o "${out}"/ -j "${job}" -d "${dim}" --log $PARAMS --sens --select none -r knn
-#                 { time Rscript "${scripts}"/benchmark_MERLoT_dest.R -t "${mscripts}" -o "${out}"/ -j "${job}" -d "${dim}" --log $PARAMS --sens --select none -r knn; } 2>> "${timefile}"
-#                 rc=$?
-#                 if [[ $rc == 124 ]]; then
-#                     Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
-#                 fi
-#             done
-#         done
-#     done
-# done
+for f in "" "-f";
+do
+    for b in "" "-b";
+    do
+        for n in "" "-n";
+        do
+            for elpi in "" "--elpi";
+            do
+                # echo "benchmark_MERLoT_dest log k fixed interp=none" $b
+                if [ -n "$b" ]; then emb="emb"; else emb="el"; fi
+                if [ -n "$f" ]; then fixed="fixed"; else fixed="free"; fi
+                if [ -n "$elpi" ]; then par="elpi"; else par="merlot"; fi
+                name="MERLoT_log_k_${fixed}_${emb}_none_knn_${par}"
+                echo "${name}" >> "${timefile}"
+                echo "${name}"
+                PARAMS="${b} ${f} ${n} ${elpi}"
+                echo Rscript "${scripts}"/benchmark_MERLoT_dest.R -t "${mscripts}" -o "${out}"/ -j "${job}" -d "${dim}" --log $PARAMS --sens --select none -r knn
+                { time Rscript "${scripts}"/benchmark_MERLoT_dest.R -t "${mscripts}" -o "${out}"/ -j "${job}" -d "${dim}" --log $PARAMS --sens --select none -r knn; } 2>> "${timefile}"
+                rc=$?
+                if [[ $rc == 124 ]]; then
+                    Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
+                fi
+            done
+        done
+    done
+done
 
-# # slingshot
-# possible=$(find "${out}" -maxdepth 1 -type f | grep "\." -v | grep "${job}")
-# for line in $possible; do
-#     name="slingshot "$line
-#     echo "${name}" >> "${timefile}"
-#     { time Rscript "${scripts}"/benchmark_slingshot.R -o "${out}"/ -j "${job}" -d "${dim}" -i "${line}" -t "$mscripts"; } 2>> "${timefile}"
-#     rc=$?
-#     if [[ $rc == 124 ]]; then
-#         Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
-#     fi
-# done
+# slingshot
+possible=$(find "${out}" -maxdepth 1 -type f | grep "\." -v | grep "${job}")
+for line in $possible; do
+    name="slingshot "$line
+    echo "${name}" >> "${timefile}"
+    { time Rscript "${scripts}"/benchmark_slingshot.R -o "${out}"/ -j "${job}" -d "${dim}" -i "${line}" -t "$mscripts"; } 2>> "${timefile}"
+    rc=$?
+    if [[ $rc == 124 ]]; then
+        Rscript "${scripts}"/benchmark_stopped.R "${out}"/ "${job}" "${name}"
+    fi
+done
 
 # monocle2, as-is
 name="monocl2"
