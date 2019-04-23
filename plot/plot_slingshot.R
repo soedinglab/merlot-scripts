@@ -19,11 +19,28 @@ sing <- "~/Documents/data/singularity_corrected/benchmark"
 bif_num = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
 methnames <- c("destiny_log_k",
-               "MERLoT_log_k_free_knn_elpi_emb_sens",
-               "MERLoT_log_k_fixed_knn_elpi_emb",
-               "slingshot_destiny_log_k",
+               "MERLoT_log_k_free_knn_merlot_emb_sens",
+               "MERLoT_log_k_fixed_knn_merlot_emb",
                "slingshot_destiny_log",
+               "slingshot_destiny_log_k",
                "monocl2")
+# methnames <- c("destiny_log_k",
+#                "MERLoT_log_free_knn_merlot_el_sens",
+#                "MERLoT_log_free_knn_elpi_el_sens",
+#                "MERLoT_log_k_free_knn_merlot_el_sens",
+#                "MERLoT_log_k_free_knn_elpi_el_sens",
+#                "MERLoT_log_free_knn_merlot_emb_sens",
+#                "MERLoT_log_free_knn_elpi_emb_sens",
+#                "MERLoT_log_k_free_knn_merlot_emb_sens",
+#                "MERLoT_log_k_free_knn_elpi_emb_sens",
+#                "MERLoT_log_fixed_knn_merlot_el",
+#                "MERLoT_log_fixed_knn_elpi_el",
+#                "MERLoT_log_k_fixed_knn_merlot_el",
+#                "MERLoT_log_k_fixed_knn_elpi_el",
+#                "MERLoT_log_fixed_knn_merlot_emb",
+#                "MERLoT_log_fixed_knn_elpi_emb",
+#                "MERLoT_log_k_fixed_knn_merlot_emb",
+#                "MERLoT_log_k_fixed_knn_elpi_emb")
 
 res = data.frame(matrix(data=0, ncol=length(methnames)+3, nrow=length(bif_num)))
 colnames(res) = c("X", methnames, "sing_slingshot_destiny_log", "sing_slingshot_destiny_log_k")
@@ -108,58 +125,67 @@ for (i in 1:length(bif_num)) {
   terr[k, 9] = q * sqrt(var(ti_res[, "slingshot_destiny_log_k"])) / 10
 }
 
-
-
 ups = res + err
 downs = res - err
 
 tups = tres + terr
 tdowns = tres - terr
 
-cols = gg_color_hue(length(methnames))
-cols <- c(cols, cols[c(5, 4)])
-ltys <- c(1,1,1,1,1,1,3,3)
-legend_ltys <- c(NA, NA, NA, NA, NA, NA, 3)
-pchs <- c(21, 21, 21, 21, 21, 21, NA)
+# cols = gg_color_hue(length(methnames))
+selected <- c(2,3,4,5,7,8)
+colnames(res)[selected]
+cols <- c("royalblue4", "green3", "darkgreen", "mediumorchid1", "brown2", "mediumorchid1")
+ltys <- c(1,1,1,1,1,3)
+legend_ltys <- c(NA, NA, NA, NA, NA, 3)
+pchs <- c(21, 21, 21, 21, 21, NA)
+legend_names <- colnames(res[selected])
+legend_names[6] = "singularity corrected"
 
-svg("/home/npapado/Documents/presentations/2019-03_benchmark_knn/branch.svg", height=6, width=8)
+svg("/home/npapado/Documents/presentations/2019-03_benchmark_knn/branch.svg", height=5, width=6.5)
 # plot fixed methods
-plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.25, 0.85),
+plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.1, 0.85),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Branch assignment quality")
 box(which = "plot", lwd=2)
 axis(1, at=bif_num, labels = bif_num+2)
 axis(2, at=c(-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1.), labels = c(-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1))
 
-for (i in seq_along(colnames(res[2:9]))) {
-  m = colnames(res[2:9])[i]
+for (i in seq_along(colnames(res[selected]))) {
+  m = colnames(res[selected])[i]
   mc = cols[i]
   points(bif_num, res[, m], pch=20, col=mc, type="b", lwd=3, cex=1.5, lty=ltys[i])
   arrows(x0 = bif_num, y0 = downs[, m], y1=ups[, m],
          code=3, angle=90, length=0.1, col=mc)
 }
-legend("bottomleft", legend=c(methnames, "singularity corrected"), ncol=1, lwd=c(1,1,1,1,1,1,3),
-       pch=pchs, pt.bg = c(cols[1:6], NA), lty=legend_ltys, pt.cex=1.5)
 dev.off()
 
 # plot fixed pseudotime
-svg("/home/npapado/Documents/presentations/2019-03_benchmark_knn/pseudotime.svg", height=6, width=8)
-plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.4, 1.0),
-     ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Pseudotime")
+svg("/home/npapado/Documents/presentations/2019-03_benchmark_knn/pseudotime.svg", height=5, width=6.5)
+plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0., 1.0),
+     ylab="Longest Path Goodman-Kruskal (unweighted)", xlab="#cell fates", axes=FALSE, main="Pseudotime")
 box(which = "plot", lwd=2)
 axis(1, at=bif_num, labels = bif_num+2)
 axis(2, at=c(-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1.), labels = c(-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1))
 
-for (i in seq_along(colnames(res[2:9]))) {
-  m = colnames(res[2:9])[i]
+for (i in seq_along(colnames(res[selected]))) {
+  m = colnames(tres[selected])[i]
   mc = cols[i]
   points(bif_num, tres[, m], pch=20, col=mc, type="b", lwd=3, cex=1.5, lty=ltys[i])
   arrows(x0 = bif_num, y0 = tdowns[, m], y1=tups[, m],
          code=3, angle=90, length=0.1, col=mc)
 }
-legend("bottomright", legend=c(methnames, "singularity corrected"), ncol=1, lwd=c(1,1,1,1,1,1,3),
-       pch=pchs, pt.bg = c(cols[1:6], NA), lty=legend_ltys, pt.cex=1.5)
 dev.off()
 
+svg("/home/npapado/Documents/presentations/2019-03_benchmark_knn/legend.svg", height=6, width=8)
+plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0., 1.0), axes=FALSE)
+legend_names <- c("destiny",
+                  "MERLoT + destiny auto",
+                  "MERLoT + destiny fixed",
+                  "slingshot + destiny",
+                  "Monocle2",
+                  "singularity corrected")
+legend("bottomleft", legend=legend_names, ncol=1, lwd=c(1,1,1,1,1,3),
+       pch=pchs, pt.bg = c(cols, NA), lty=legend_ltys, pt.cex=1.5)
+dev.off()
 
 # # error_bars <- ups - downs
 # # error_bars$X <- 1:10

@@ -353,7 +353,7 @@ parse_cluster_output <- function(subfolders, benchmark_dir, functions, methods, 
   if(type == "branch") {
     def <- c(0,-1,0,0,0,0,0)
   } else {
-    def <- c(-1, -1, -1, -1, -1)
+    def <- c(-1, -1, -1, -1, 0)
   }
   
   default <- matrix(rep(def, met), ncol=met)

@@ -53,7 +53,7 @@ cells2nodes <- mod1$classification
 centroids <- t(mod1$parameters$mean)
 clusterid <- as.numeric(cells2nodes)
 sling_branches <- assign_branches(mstree, clusterid, centroids, CellCoordinates)
-adjusted_mi(sling_branches, labels, "bla")
+adjusted_mi(labels, sling_branches, "bla")
 
 # predict pseudotime per trajectory for each cell
 sds <- getCurves(sds)
@@ -64,7 +64,6 @@ sling <- sds
 # interpreted <- read.table(paste(job, which_sling, "branches.csv", sep="_"), sep=",", header = T)
 
 predicted_labels <- as.factor(apply(sling@clusterLabels, 1, function(x) names(which(x == 1))))
-
 
 par(mfrow=c(1,2))
 plot(reducedDims(sling), col = predicted_labels, pch=16, asp = 1)
