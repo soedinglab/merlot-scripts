@@ -112,11 +112,8 @@ JobName <- paste(JobName, "destiny", sep = "_")
 
 if (iflog) {JobName <- paste(JobName, "_log", sep = "")}
 if (knn) {JobName <- paste(JobName, "_k", sep = "")}
+if (preselected) {JobName <- paste(JobName, "sel", select, sep = "_")}
+saveRDS(dif, file = paste(JobFolder, JobName, sep = ""))
+write.table(dif@eigenvectors, file = paste(JobFolder, JobName, ".csv", sep = ""))
 
-if (preselected) {
-  JobName <- paste(JobName, "sel", select, sep = "_")
-  saveRDS(dif, file = paste(JobFolder, JobName, sep = ""))
-} else {
-  saveRDS(dif, file = paste(JobFolder, JobName, sep = ""))
-}
 write(x = LOG_MESSAGE, file = paste(JobFolder, JobName, ".log", sep = ""))

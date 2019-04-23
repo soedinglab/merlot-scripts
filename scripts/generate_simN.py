@@ -19,14 +19,6 @@ from prosstt import simulation as sim
 from prosstt import tree
 from prosstt import sim_utils as sut
 
-with warnings.catch_warnings():
-    warnings.filterwarnings(message='.*Conversion of the second.*',
-                            action='ignore',
-                            category=FutureWarning,
-                            module='h5py')
-    import anndata as ad
-    from scanpy.api.tl import diffmap
-
 def maxes(x):
     res = np.zeros(len(x.keys()))
     for i, b in enumerate(x.keys()):
@@ -107,7 +99,7 @@ def main(job_id, save_dir, num_brpoints):
     t.add_genes(Ms)
 
     X, pseudotime, brns, scalings = sim.sample_density(
-        t, t.num_branches * 50, alpha=alpha, beta=beta)
+        t, t.num_branches * 50 * 20, alpha=alpha, beta=beta)
     # X, pseudotime, brns, scalings = sim.sample_whole_tree(t, 1, alpha=alpha, beta=beta)
 
     save_params(job_id, save_dir, t, rseed)

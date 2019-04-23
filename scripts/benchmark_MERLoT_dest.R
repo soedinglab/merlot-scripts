@@ -39,7 +39,11 @@ option_list <- list(
   make_option(c("-i", "--interpolate"), type = "character", action = "store", default = "none",
               help = "Whether and where to add interpolated nodes to the tree before evaluation. One of 'elastic', 'emb', 'elemb', 'none'. [default = %default]"),
   make_option(c("-e", "--select"), type="character", default = "none",
-              help = "The <name> (merlot|monocle) of a file with a subset of the dataset with only informative genes.")
+              help = "The <name> (merlot|monocle) of a file with a subset of the dataset with only informative genes."),
+  make_option(c("-r", "--reduced"), type="character", default = "none",
+              help = "The suffix of a file with local averaging."),
+  make_option("--elpi", action = "store_true", default = FALSE,
+              help = "Toggle to use default mu and lambda parameters for the elastic tree. [default = %default]")
 ); 
 
 opt_parser <- OptionParser(option_list = option_list);
@@ -61,6 +65,8 @@ knn <- opt$knn
 iflog <- opt$log
 interp <- opt$interpolate
 select <- opt$select
+reduced <- opt$reduced
+use_elpi <- opt$elpi
 
 choices <- c("elastic", "emb", "elemb", "none")
 if(!interp %in% choices) {
@@ -113,10 +119,20 @@ if (select == "merlot") {
 }
 diffmap <- paste("destiny", prefix, sep = "")
 print(diffmap)
-# print(paste("using ", job, diffmap, sep = "_"))
-dif <- readRDS(file = paste(job, diffmap, sep = "_"))
-CellCoordinates <- dif@eigenvectors[,1:dimensions]
+
+if (reduced == "none") {
+  # print(paste("using ", job, diffmap, sep = "_"))
+  dif <- readRDS(file = paste(job, diffmap, sep = "_"))
+  CellCoordinates <- dif@eigenvectors[,1:dimensions]
+} else {
+  dif <- paste(job, "_", diffmap, "_", reduced, ".txt", sep="")
+  CellCoordinates <- read.table(dif, sep=" ", header=FALSE)
+  dif <- readRDS(file = paste(job, diffmap, sep = "_"))
+  FullCoordinates <- dif@eigenvectors[,1:dimensions]
+}
+
 LOG_MESSAGE <- paste(LOG_MESSAGE, "dimensions:", dim(CellCoordinates), "\n")
+LOG_MESSAGE <- paste(LOG_MESSAGE, "reduced:", reduced, "\n")
 assign("LOG_MESSAGE", LOG_MESSAGE, envir = .GlobalEnv)
 rm(dif)
 
@@ -136,18 +152,46 @@ if (fixed) {
   prefix <- paste(prefix, "free", sep = "_")
 }
 
+if(reduced != "none") prefix <- paste(prefix, reduced, sep = "_")
+if(use_elpi) {
+  prefix <- paste(prefix, "elpi", sep = "_")
+} else {
+  prefix <- paste(prefix, "merlot", sep = "_")
+}
+
+# check if we did this before already
 if (embed) {
   res_prefix <- paste(prefix, "emb", sep = "_")
 } else {
   res_prefix <- paste(prefix, "el", sep = "_")
 }
-print(prefix)
+if (sens) { res_prefix <- paste(res_prefix, "sens", sep = "_") }
+
+res_file <- paste(JobFolder, JobName, "_eval.txt", sep = "")
+res_name <- paste("MERLoT", res_prefix, sep = "")
+if (file.exists(res_file)) {
+  eval <- t(as.matrix(read.table(res_file, check.names=FALSE, stringsAsFactors = FALSE)))
+  # print(colnames(eval))
+  # print(res_name)
+  if (res_name %in% colnames(eval)) {
+    stop(paste(res_name, "already evaluated!"))
+  }
+}
+
+# now reset result prefix:
+if (embed) {
+  res_prefix <- paste(prefix, "emb", sep = "_")
+} else {
+  res_prefix <- paste(prefix, "el", sep = "_")
+}
 
 various <- paste(mscripts, "/scripts/various.R", sep = "")
 evaluat <- paste(mscripts, "/scripts/evaluate_method.R", sep = "")
+niko <- paste(mscripts, "/scripts/niko_tree_funcs.R", sep = "")
 
 suppressPackageStartupMessages(source(various))
 suppressPackageStartupMessages(source(evaluat))
+suppressPackageStartupMessages(source(niko))
 
 Dataset <- ReadDataset(paste(job, "simulation.txt", sep = "_"))
 
@@ -165,56 +209,53 @@ start <- min(which(time == min(time)))
 labels <- cell_params$branches + 1
 
 if(embed) {
-  methname <- paste("_LPGraph", prefix, sep = "")
-
-  if (interp == "elemb") {
-    methname <- paste(methname, "_el_il", sep = "")
-    res_prefix <- paste(res_prefix, "ilm", sep = "_")
-  } else {
-    methname <- paste(methname, "_el", sep = "")
-  }
+  methname <- paste("_MERLoT", prefix, sep = "")
+  methname <- paste(methname, "_el", sep = "")
 
   if (sens) {
     res_prefix <- paste(res_prefix, "sens", sep = "_")
     methname <- paste(methname, "sens", sep = "_")
   }
+  print(paste("reading ", job, methname, ".elastic", sep = ""))
   etree <- readRDS(paste(job, methname, ".elastic", sep = ""))
-  tree <- GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = etree)
-
-  if (interp == "emb") {
-    tree <- DuplicateTreeNodes(tree)
-    methname <- paste(methname, "_emb_im", sep = "")
-    res_prefix <- paste(res_prefix, "im", sep = "_")
+  if (use_elpi) {
+    tree <- nikoEmbed(Dataset$ExpressionMatrix, etree)
+  } else {
+    tree <- GenesSpaceEmbedding(ExpressionMatrix = Dataset$ExpressionMatrix, ElasticTree = etree)
   }
 
 } else {
-  methname <- paste("_LPGraph", res_prefix, sep = "")
+  methname <- paste("_MERLoT", res_prefix, sep = "")
   # since we run many versions of the elastic tree maybe we have already calculated the scaffold tree
-  if (interp == "elastic") {
-    scaffold <- readRDS(paste(job, methname, ".scaf", sep = ""))
-    tree <- readRDS(paste(job, methname, ".elastic", sep = ""))
-
-    tree <- DuplicateTreeNodes(tree)
-    res_prefix <- paste(res_prefix, "il", sep = "_")
-    saveRDS(object = tree, file = paste(job, methname, "_il.elastic", sep = ""))
+  if(fixed) {
+    scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1,
+                                      python_location="~/miniconda3/envs/py36/bin/python",
+                                      tmp_dir = JobFolder)
   } else {
-
-    if(fixed) {
-      scaffold <- CalculateScaffoldTree(CellCoordinates, NEndpoints = dimensions + 1)
+    if (sens) {
+      N <- dim(CellCoordinates)[1]
+      res_prefix <- paste(res_prefix, "sens", sep = "_")
+      scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N),
+                                        python_location="~/miniconda3/envs/py36/bin/python",
+                                        tmp_dir = JobFolder)
     } else {
-      if (sens) {
-        N <- length(cells)
-        res_prefix <- paste(res_prefix, "sens", sep = "_")
-        scaffold <- CalculateScaffoldTree(CellCoordinates, BranchMinLengthSensitive = sqrt(N))
-      } else {
-        scaffold <- CalculateScaffoldTree(CellCoordinates)
-      }
+      scaffold <- CalculateScaffoldTree(CellCoordinates,
+                                        python_location="~/miniconda3/envs/py36/bin/python",
+                                        tmp_dir = JobFolder)
     }
-    tree <- CalculateElasticTree(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
-    methname <- paste("_LPGraph", res_prefix, sep = "")
-    saveRDS(object = tree, file = paste(job, methname, ".elastic", sep = ""))
-    saveRDS(object = scaffold, file = paste(job, methname, ".scaf", sep = ""))
   }
+  
+  if (use_elpi) {
+    tree <- nikoElastic(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
+  } else {
+    tree <- CalculateElasticTree(scaffold, N_yk, FixEndpoints = F, NBranchScaffoldNodes = FALSE)
+  }
+  if (reduced != "none") {
+    tree <- inflate_elastic_tree(tree, FullCoordinates)
+  }
+  methname <- paste("_MERLoT", res_prefix, sep = "")
+  saveRDS(object = tree, file = paste(job, methname, ".elastic", sep = ""))
+  saveRDS(object = scaffold, file = paste(job, methname, ".scaf", sep = ""))
 }
 
 nodes = tree$Cells2TreeNodes[, 2]
@@ -241,7 +282,7 @@ if(length(hhbranches) == 1) {
 
 # print(hhtimes)
 par_loc <- paste(job, "params.txt", sep = "_")
-methname <- paste("LPGraph", res_prefix, sep = "")
+methname <- paste("MERLoT", res_prefix, sep = "")
 res <- evaluate_method(methname, hhbranches, hhtimes, cell_params, par_loc)
 # print(hhres)
 if (showparams) {

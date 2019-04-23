@@ -79,22 +79,37 @@ mod1 <- Mclust(CellCoordinates, x = mclusters)
 # use clusters to get lineages
 # specify the cluster of cell 1 as start to get best pseudotime results
 sds <- getLineages(CellCoordinates, mod1$classification, start.clus = mod1$classification[start])
+# sds <- tryCatch( {
+#   getLineages(CellCoordinates, mod1$classification, start.clus = mod1$classification[start])
+#   }, 
+#   error = function(cond) {
+#     print("System is computationally singular. Rerunning with some random noise.")
+#     print(cond)
+#     # LOG_MESSAGE <- paste(LOG_MESSAGE, cond, "\n")
+#     # assign("LOG_MESSAGE", LOG_MESSAGE, envir = .GlobalEnv)
+#     span <- range(CellCoordinates)[2] - range(CellCoordinates)[1]
+#     N <- dim(CellCoordinates)[1]
+#     K <- dim(CellCoordinates)[2]
+#     noise <- rnorm(N*K, mean = 0, sd = span/100)
+#     dim(noise) <- c(N, K)
+#     getLineages(CellCoordinates+noise, mod1$classification, start.clus = mod1$classification[start])
+#   })
 
 # get connectivity of clusters and re-create the MST
-nodes_order <- order(as.numeric(colnames(sds@connectivity)))
-adj_matrix <- sds@connectivity[nodes_order, nodes_order]
+nodes_order <- order(as.numeric(colnames(sds@adjacency)))
+adj_matrix <- sds@adjacency[nodes_order, nodes_order]
 mstree <- graph_from_adjacency_matrix(adj_matrix, mode = "undirected")
 
 # map cells to clusters, get cluster centroids and collapse co-linear clusters
 # to form branch assignments for each cell
 cells2nodes <- mod1$classification
 centroids <- t(mod1$parameters$mean)
-clusterid <- as.numeric(sds@clusterLabels)
+clusterid <- as.numeric(cells2nodes)
 sling_branches <- assign_branches(mstree, clusterid, centroids, CellCoordinates)
 
 # predict pseudotime per trajectory for each cell
 sds <- getCurves(sds)
-traj_pseudotime <- pseudotime(sds)
+traj_pseudotime <- slingPseudotime(sds)
 # average over the different trajectories for global pt. This is ok to do, because:
 # 1. all trajectories start at the same cell, so we are averaging geodesic distances from the same point
 # 2. if cell c doesn't belong to trajectory t it doesn't get a pseudotime for it

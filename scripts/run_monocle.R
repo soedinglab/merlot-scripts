@@ -127,16 +127,10 @@ if (!is.na(data)) {
 # now calculate tree:
 # prepare data for TreeTopology.py
 JobName <- paste(JobName, "monocl2", sep = "_")
-if (unconstr) {
-  JobName <- paste(JobName, "unc", sep = "_")
-}
-
-if (preselected) {
-  JobName <- paste(JobName, "sel", select, sep = "_")
-  saveRDS(object=data, file = paste(JobFolder, JobName, sep=""))
-} else {
-  saveRDS(object=data, file = paste(JobFolder, JobName, sep=""))
-}
+if (unconstr) {JobName <- paste(JobName, "unc", sep = "_")}
+if (preselected) {JobName <- paste(JobName, "sel", select, sep = "_")}
+write.table(data@reducedDimS, file = paste(JobFolder, JobName, ".csv", sep = ""))
+saveRDS(object=data, file = paste(JobFolder, JobName, sep=""))
 
 # run TreeTopology.py on JobFolder_JobName_CellCoord
 write(x = LOG_MESSAGE, file = paste(JobFolder, JobName, ".log", sep=""))

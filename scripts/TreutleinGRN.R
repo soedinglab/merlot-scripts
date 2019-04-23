@@ -12,7 +12,7 @@ DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix)
 # we take the first two diffusion coordinates
 CellCoordinates=DatasetDM@eigenvectors[,1:2]
 # We calculate the scaffold tree for MERLoT
-ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates)
+ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, python_location="~/miniconda3/envs/py36/bin/python")
 
 # This is the number of nodes to be used for the Principal Elastic Tree
 NumberOfNodes=200

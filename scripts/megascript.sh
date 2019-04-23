@@ -24,16 +24,38 @@ elif [ "$sim" = "PROSSTT" ]; then
 fi
 
 # simulate
-bash "$simscript" "$hhtree" "$job" "$out" bla "$n"
+# bash "$simscript" "$scripts" "$job" "$out" "$n"
 
-# run diffusion maps
-Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -n -l -s none
-Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -l -s none
+# run diffusion maps but check if they exist first
+if [ ! -f "${out}"/"${job}"_destiny_log_k ]; then
+  Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -n -l -s none
+else
+  echo "${out}"/"${job}"_destiny_log_k already present!
+fi
+
+if [ ! -f "${out}"/"${job}"_destiny_log ]; then
+  Rscript "${scripts}"/run_destiny.R -o "${out}"/ -j "${job}" -d "${dim}" -l -s none
+else
+  echo "${out}"/"${job}"_destiny_log already present!
+fi
+
+# perform local averaging for the diffusion maps
+# but check if they exist first!
+if [ ! -f "${out}"/"${job}"_destiny_log_knn.txt ]; then
+  bash "${scripts}"/run_reduce.sh "${scripts}" "${out}"/"${job}"_destiny_log "${dim}"
+else
+  echo "${out}"/"${job}"_destiny_log_knn.txt already present!
+fi
+
+if [ ! -f "${out}"/"${job}"_destiny_log_k_knn.txt ]; then
+  bash "${scripts}"/run_reduce.sh "${scripts}" "${out}"/"${job}"_destiny_log_k "${dim}"
+else
+  echo "${out}"/"${job}"_destiny_log_k_knn.txt already present!
+fi
 
 # run monocle
-Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" --unconstrained -s none
-Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" -d "${dim}" -s none
+# Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" --unconstrained -s none
+# Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" -d "${dim}" -s none
 
 # run predictions and benchmark them
-bash "${scripts}"/timed_benchmarksN.sh "${hhtree}" "${out}"/ "${job}" "${dim}"
-
+bash "${scripts}"/timed_resamplesN.sh "${hhtree}" "${out}"/ "${job}" "${dim}"

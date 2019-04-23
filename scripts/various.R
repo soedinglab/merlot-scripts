@@ -342,6 +342,59 @@ parse_benchmark <- function(subfolders, benchmark_dir, functions, methods, type,
 }
 
 
+parse_cluster_output <- function(subfolders, benchmark_dir, functions, methods, type, replNA = TRUE) {
+  fac <- length(functions)
+  met <- length(methods)
+  res <- matrix(0, ncol=length(methods)+2,
+                nrow=length(subfolders)*fac)
+  
+  colnames(res) <- c(methods, "measure", "experiment")
+  
+  if(type == "branch") {
+    def <- c(0,-1,0,0,0,0,0)
+  } else {
+    def <- c(-1, -1, -1, -1, 0)
+  }
+  
+  default <- matrix(rep(def, met), ncol=met)
+  
+  for (i in 1:length(subfolders)) {
+    r_eval = matrix(rep(def, met+2), ncol=met+2)
+    colnames(r_eval) <- c(methods, "measure", "experiment")
+
+    # print(i)
+    s <- subfolders[i]
+    eval <- paste(benchmark_dir, s, sep="")
+    s_eval <- t(as.matrix(read.table(eval, check.names=FALSE, stringsAsFactors = FALSE)))
+    keep <- rownames(s_eval) %in% functions
+    s_eval <- s_eval[keep,]
+    
+    keep <- colnames(s_eval) %in% methods
+    s_eval <- s_eval[,keep]
+    if(replNA) {
+      default <- matrix(rep(def, ncol(s_eval)), ncol=ncol(s_eval))
+      repl <- is.na(s_eval)
+      s_eval[repl] <- default[repl]
+    }
+    
+    for (m in colnames(s_eval)) {
+      r_eval[,m] = s_eval[,m]
+    }
+    r_eval[,"measure"] = rownames(s_eval)
+    r_eval[,"experiment"] <- subfolders[i]
+    # s_eval <- cbind(s_eval, names, exp)
+    start <- (i-1)* fac + 1
+    end <- start + fac - 1
+    
+    # print(dim(s_eval))
+    # print(dim(res[start:end,]))
+    # print("======")
+    res[start:end, 1:dim(r_eval)[2]] <- r_eval
+  }
+  return(res)
+}
+
+
 parse_grid <- function(subfolders, benchmark_dir, funcnames, timenames, params) {
   fac <- length(funcnames) + length(timenames)
   length_m <- prod(unlist(lapply(params, length)))
