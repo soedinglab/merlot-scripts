@@ -3,22 +3,22 @@
 module load R/3.5.0
 # super mega script that does  E V E R Y T H I N G
 
-hhtree=$1   # location of merlot-scripts repository
+mscripts=$1   # location of merlot-scripts repository
 job=$2    # name of each simulation folder
 out=$3      # name of output folder
 n=$4        # number of bifurcations
 sim=$5      # which simulation suite to use (if empty only runs evaluation)
 
-scripts=$hhtree/scripts
+scripts=$mscripts/scripts
 
 # determine the simulations
 if [ "$sim" = "splatter" ]; then
   # echo "splatter"
-  simscript="$hhtree"/scripts/run_splatN.sh
+  simscript="$mscripts"/scripts/run_splatN.sh
   dim=$((n + 2)) # number of allowed dimensions
   dim=$((dim>2?dim:3))
 elif [ "$sim" = "PROSSTT" ]; then
-  simscript="$hhtree"/scripts/run_simN.sh
+  simscript="$mscripts"/scripts/run_simN.sh
   dim=$((n + 1)) # number of allowed dimensions
   dim=$((dim>2?dim:2))
 fi
@@ -54,8 +54,8 @@ else
 fi
 
 # run monocle
-# Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" --unconstrained -s none
-# Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" -d "${dim}" -s none
+Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" --unconstrained -s none
+Rscript "${scripts}"/run_monocle.R -o "${out}"/ -j "${job}" -d "${dim}" -s none
 
 # run predictions and benchmark them
-bash "${scripts}"/timed_resamplesN.sh "${hhtree}" "${out}"/ "${job}" "${dim}"
+bash "${scripts}"/timed_resamplesN.sh "${mscripts}" "${out}"/ "${job}" "${dim}"

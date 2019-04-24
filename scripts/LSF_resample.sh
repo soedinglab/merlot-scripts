@@ -1,6 +1,6 @@
 #!/usr/bin/bash -eux
 
-mscripts=$1       # location of merlot-scripts repository
+mscripts=$1     # location of merlot-scripts repository
 batch=$2        # name of each simulation folder
 out=$3          # name of overall output folder
 sub_file=$4     # the big file that holds all of the jobs to be submitted

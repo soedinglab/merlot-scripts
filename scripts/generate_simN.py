@@ -12,9 +12,6 @@ from numpy import random
 import pandas as pd
 import scipy as sp
 
-import matplotlib.pyplot as plt
-import pylab
-
 from prosstt import simulation as sim
 from prosstt import tree
 from prosstt import sim_utils as sut

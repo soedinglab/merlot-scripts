@@ -1,10 +1,3 @@
-## Dependencies
-These scripts require the [`rprosstt`](https://github.com/soedinglab/prosstt-r) package for some plotting functions. Install from github using `devtools`:
-```
-library(devtools)
-install_github("soedinglab/prosstt-r")
-```
-
 ## benchmark scripts
 
 A collection of scripts that was used to generate and benchmark the simulations provided with the tool MERLoT. Download the expression matrices and parameter files via the [GWDG FTP server](wwwuser.gwdg.de/~compbiol/merlot/). These will be used as examples for the various scripts.
@@ -35,3 +28,52 @@ The repository also includes the scripts needed to run simulations (`run_simN.sh
 
 ### benchmark evaluation & plotting
 The repository also includes two collections of scripts that were used to read and evaluate the output of the benchmark. These continue the evaluation indices used in the paper (F1 Measure, Jaccard Index, Matthews Correlation Coefficient, adjusted Mutual Information, Goodman-Kruskall Index) as well as others (`evaluate_method.R`, `various.R`).
+
+## Dependencies
+
+The following R packages are required:
+
+From CRAN:
+
+- `infotheo`
+- `igraph`
+- `entropy`
+- `optparse`
+- `FNN`
+- `viridis`
+- `ggplot2`
+- `ggnetwork`
+- `ggrepel`
+- `network`
+- `intergraph`
+- `mclust`
+- `pdist`
+- `hashmap`
+- `reshape2`
+
+From Bioconductor:
+
+- `destiny`
+- `monocle`, version 2.7
+- `AnnotationDbi`
+- `org.Mm.eg.db`
+- `org.Hs.eg.db`
+- `topGO`
+
+Other:
+- [`rprosstt`](https://github.com/soedinglab/prosstt-r)
+- [`merlot`](https://github.com/soedinglab/merlot)
+- `slingshot`
+- `ElPiGraph.R`
+- `TSCAN`
+- `SLICER`
+
+Python dependencies:
+
+- `numpy`
+- `scipy`
+- `pandas`
+- `sklearn`
+- 
+
+- `prosstt`

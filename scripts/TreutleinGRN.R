@@ -1,4 +1,4 @@
-source('/home/gonzalo/Desktop/Johannes/MERLoT/GRNCode/gene_network_analysis.R')
+source('merlot-scripts/scripts/gene_network_analysis.R')
 library(merlot)
 library(data.table)
 
@@ -12,7 +12,7 @@ DatasetDM <- DiffusionMap(Dataset$ExpressionMatrix)
 # we take the first two diffusion coordinates
 CellCoordinates=DatasetDM@eigenvectors[,1:2]
 # We calculate the scaffold tree for MERLoT
-ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates, python_location="~/miniconda3/envs/py36/bin/python")
+ScaffoldTree=CalculateScaffoldTree(CellCoordinates = CellCoordinates)
 
 # This is the number of nodes to be used for the Principal Elastic Tree
 NumberOfNodes=200
@@ -38,7 +38,7 @@ NDEgenes<-gatherDEgenes(NbrDE)
 MDEgenes<-gatherDEgenes(MbrDE)
 
 # Plot the reconstructed lineage tree
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/Tree.svg", width = 6, height = 5)
+# svg("OUTPUT/Tree.svg", width = 6, height = 5)
 plot_elastic_tree(ElasticTree)
 # dev.off()
 
@@ -52,18 +52,18 @@ treutgrns$nonimputed0.9 = makeGRN(emb_tree = EmbeddedTree, globalmode = T, cutof
 density_imputed=density(treutgrns$imputed0.9$full_cors)
 density_nonimputed=density(treutgrns$nonimputed0.9$full_cors)
 
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/correlations.svg", width = 6, height = 5)
+# svg("OUTPUT/correlations.svg", width = 6, height = 5)
 plot(density_imputed$x, density_imputed$y, xlim=c(-1.1,1.1), ylim=c(0,1.4), type="l", col="darkgreen", lwd=2, xlab="Pearson's correlation coeff", ylab="Density")
 lines(density_nonimputed$x, density_nonimputed$y, col="darkred", lwd=2)
 abline(v=0.9)
 box(lwd=2)
 # dev.off()
 
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/gene_neu.svg", width = 6, height = 5)
+# svg("OUTPUT/gene_neu.svg", width = 6, height = 5)
 plot_pseudotime_expression_gene(GeneName = "Ank2" , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = F, range_y = "cells")
 # dev.off()
 
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/gene_myo.svg", width = 6, height = 5)
+# svg("OUTPUT/gene_myo.svg", width = 6, height = 5)
 plot_pseudotime_expression_gene(GeneName = MDEgenes$GeneName[1] , EmbeddedTree = EmbeddedTree, Pseudotimes = Pseudotimes, addlegend = F, range_y = "cells")
 # dev.off()
 
@@ -78,38 +78,38 @@ plotGRN(treutgrns$imputed0.9, DEdifference = T, DEgenes= NDEgenes, sizeNodes = 3
 # We create different GRNs using different
 # thresholds for the non-imputed values.
 ###############################################
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/non_imputed0.9.svg", width = 5, height = 5)
+# svg("OUTPUT/non_imputed0.9.svg", width = 5, height = 5)
 plotGRN(treutgrns$nonimputed0.9, DEdifference = T, DEgenes= NDEgenes, sizeNodes = 3, title='', plotnamesofgenes = '')
 # dev.off()
 
 # We try different lower thresholds for reconstructing the GRN with non imputed values
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/non_imputed0.8.svg", width = 5, height = 5)
+# svg("OUTPUT/non_imputed0.8.svg", width = 5, height = 5)
 treutgrns$nonimputed0.8 = makeGRN(emb_tree = EmbeddedTree, globalmode = T, cutoff = .8, mode = 'cells')
 plotGRN(treutgrns$nonimputed0.8, DEdifference = T, DEgenes = NDEgenes, sizeNodes = 3, title='', plotnamesofgenes = '')
 # dev.off()
 
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/non_imputed0.7.svg", width = 5, height = 5)
+# svg("OUTPUT/non_imputed0.7.svg", width = 5, height = 5)
 treutgrns$nonimputed0.7 = makeGRN(emb_tree = EmbeddedTree, globalmode = T, cutoff = .7, mode = 'cells')
 plotGRN(treutgrns$nonimputed0.7, DEdifference = T, DEgenes = NDEgenes, sizeNodes = 3, title='', plotnamesofgenes = '')
 # dev.off()
 
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/non_imputed0.6.svg", width = 5, height = 5)
+# svg("OUTPUT/non_imputed0.6.svg", width = 5, height = 5)
 treutgrns$nonimputed0.6 = makeGRN(emb_tree = EmbeddedTree, globalmode = T, cutoff = .6, mode = 'cells')
 plotGRN(treutgrns$nonimputed0.6, DEdifference = T, DEgenes = NDEgenes, sizeNodes = 3, title='', plotnamesofgenes = '')
 # dev.off()
 
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/non_imputed0.5.svg", width = 5, height = 5)
+# svg("OUTPUT/non_imputed0.5.svg", width = 5, height = 5)
 treutgrns$nonimputed0.5 = makeGRN(emb_tree = EmbeddedTree, globalmode = T, cutoff = .5, mode = 'cells')
 plotGRN(treutgrns$nonimputed0.5, DEdifference = T, DEgenes = NDEgenes, sizeNodes = 3, title='', plotnamesofgenes = '')
 # dev.off()
 
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/non_imputed0.4.svg", width = 5, height = 5)
+# svg("OUTPUT/non_imputed0.4.svg", width = 5, height = 5)
 treutgrns$nonimputed0.4 = makeGRN(emb_tree = EmbeddedTree, globalmode = T, cutoff = .4, mode = 'cells')
 plotGRN(treutgrns$nonimputed0.4, DEdifference = T, DEgenes = NDEgenes, sizeNodes = 3, title='', plotnamesofgenes = '')
 # dev.off()
 
 # Clustering
-# svg("/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/Mnon_imputed0.4.svg", width = 5, height = 5)
+# svg("OUTPUT/Mnon_imputed0.4.svg", width = 5, height = 5)
 treutclust<-lapply(treutgrns, clusterGRN, method='label_propagation', min.clust=3)
 plotGRN(treutgrns$imputed0.9, clustering = treutclust$imputed0.9, sizeNodes = 2)
 # dev.off()
@@ -125,7 +125,7 @@ Whole_MF_GRN_GO_termenrichment <-GRN_GO_termenrichment(annotation=annot,clusteri
 # M_MF_GRN_GO_termenrichment <-GRN_GO_termenrichment(annotation=annot,clustering= treutclust$brM,ontology='BP', n = 10)
 # N_MF_GRN_GO_termenrichment <-GRN_GO_termenrichment(annotation=annot,clustering= treutclust$brN,ontology='BP', n = 10)
 #
-write.csv(x = rbindlist(GObrWhBP, idcol="ID"), file = '/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/GObrWhBP_cells_50.csv')
+write.csv(x = rbindlist(GObrWhBP, idcol="ID"), file = 'OUTPUT/GObrWhBP_cells_50.csv')
 # write.csv(x = rbindlist(GObrWhMF, idcol="ID"), file = 'GObrWhMF_cells_50.csv')
 # write.csv(x = rbindlist(GObrWhCC, idcol="ID"), file = 'GObrWhCC_cells_50.csv')
 
@@ -136,7 +136,7 @@ GO_imp_Wh_MF <- GRN_GO_termenrichment(annotation=annot,clustering= treutclust$im
 GO_imp_Wh_CC <- GRN_GO_termenrichment(annotation=annot,clustering= treutclust$imputed0.9,ontology='CC', n = 10)
 GO_imp_Wh_BP <- GRN_GO_termenrichment(annotation=annot,clustering= treutclust$imputed0.9,ontology='BP', n = 10)
 
-write.csv(x = rbindlist(GO_imp_Wh_MF, idcol="ID"), file = '/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/GO_imp_Whole_MF.csv')
-write.csv(x = rbindlist(GO_imp_Wh_CC, idcol="ID"), file = '/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/GO_imp_Whole_CC.csv')
-write.csv(x = rbindlist(GO_imp_Wh_BP, idcol="ID"), file = '/home/gonzalo/Desktop/Johannes/MERLoT/GRNs/GO_imp_Whole_BP.csv')
+write.csv(x = rbindlist(GO_imp_Wh_MF, idcol="ID"), file = 'OUTPUT/GO_imp_Whole_MF.csv')
+write.csv(x = rbindlist(GO_imp_Wh_CC, idcol="ID"), file = 'OUTPUT/GO_imp_Whole_CC.csv')
+write.csv(x = rbindlist(GO_imp_Wh_BP, idcol="ID"), file = 'OUTPUT/GO_imp_Whole_BP.csv')
 
