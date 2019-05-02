@@ -8,9 +8,9 @@ gg_color_hue <- function(n) {
   hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
-hhtree <- "~/Documents/repos/merlot-scripts"
-various <- paste(hhtree, "/scripts/various.R", sep="")
-evaluat <- paste(hhtree, "/scripts/evaluate_method.R", sep="")
+mscripts <- "/path/to/merlot-scripts"
+various <- paste(mscripts, "/scripts/various.R", sep="")
+evaluat <- paste(mscripts, "/scripts/evaluate_method.R", sep="")
 suppressPackageStartupMessages(source(various))
 suppressPackageStartupMessages(source(evaluat))
 
@@ -141,7 +141,7 @@ pchs <- c(21, 21, 21, 21, 21, NA)
 legend_names <- colnames(res[selected])
 legend_names[6] = "singularity corrected"
 
-svg("/home/npapado/Documents/presentations/2019-03_benchmark_knn/branch.svg", height=5, width=6.5)
+# svg("/path/to/output/branch.svg", height=5, width=6.5)
 # plot fixed methods
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.1, 0.85),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Branch assignment quality")
@@ -156,10 +156,10 @@ for (i in seq_along(colnames(res[selected]))) {
   arrows(x0 = bif_num, y0 = downs[, m], y1=ups[, m],
          code=3, angle=90, length=0.1, col=mc)
 }
-dev.off()
+# dev.off()
 
 # plot fixed pseudotime
-svg("/home/npapado/Documents/presentations/2019-03_benchmark_knn/pseudotime.svg", height=5, width=6.5)
+# svg("/path/to/output/pseudotime.svg", height=5, width=6.5)
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0., 1.0),
      ylab="Longest Path Goodman-Kruskal (unweighted)", xlab="#cell fates", axes=FALSE, main="Pseudotime")
 box(which = "plot", lwd=2)
@@ -173,9 +173,9 @@ for (i in seq_along(colnames(res[selected]))) {
   arrows(x0 = bif_num, y0 = tdowns[, m], y1=tups[, m],
          code=3, angle=90, length=0.1, col=mc)
 }
-dev.off()
+# dev.off()
 
-svg("/home/npapado/Documents/presentations/2019-03_benchmark_knn/legend.svg", height=6, width=8)
+# svg("/path/to/output/legend.svg", height=6, width=8)
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0., 1.0), axes=FALSE)
 legend_names <- c("destiny",
                   "MERLoT + destiny auto",
@@ -185,7 +185,7 @@ legend_names <- c("destiny",
                   "singularity corrected")
 legend("bottomleft", legend=legend_names, ncol=1, lwd=c(1,1,1,1,1,3),
        pch=pchs, pt.bg = c(cols, NA), lty=legend_ltys, pt.cex=1.5)
-dev.off()
+# dev.off()
 
 # # error_bars <- ups - downs
 # # error_bars$X <- 1:10

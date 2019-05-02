@@ -1,5 +1,5 @@
 #!/usr/bin/Rscript
-source("~/Documents/repos/merlot-scripts/plot/auxiliary.R")
+source("/path/to/merlot-scripts/plot/auxiliary.R")
 
 tres = data.frame(matrix(data=0, ncol=length(methnames)+1, nrow=length(bif_num)))
 colnames(tres) = c("X", methnames)
@@ -12,7 +12,7 @@ terr$X = bif_num
 timenames <- c("goodman-kruskall (unweighted)", "goodman-kruskall (weighted)",
                "kendall index (unweighted)", "kendall index (weighted)", "LPGK")
 
-bench_dir <- "~/Documents/data/prosstt/benchmark"
+bench_dir <- "path/to/prosstt/benchmark"
 selected <- prosstt_selected[c(3, 5)]
   
 f <- 6

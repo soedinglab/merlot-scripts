@@ -160,7 +160,7 @@ tups[, m] <- leg_tups[, m]
 extended_methnames <- c(methnames, "LPGraph_log_k_fixed_emb", "LPGraph_log_k_free_emb_sens")
 cols = c(gg_color_hue(length(methnames)), "black", "gray")
 
-png("/home/npapado/Documents/presentations/2019-04_benchmark_knn/branch_fixed.png")
+# png("/path/to/output/branch_fixed.png")
 # plot fixed methods
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.25, 0.9),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Branch assignment quality")
@@ -182,11 +182,11 @@ for (i in seq_along(extended_methnames)) {
 fixed <- grepl("fixed", methnames)
 legend("bottomright", legend=c("legacy", methtitles[fixed]), pch=21,
        pt.bg = c("black", cols[fixed]), pt.cex=1.5, ncol=2)
-dev.off()
+# dev.off()
 
 
 # plot free methods
-png("/home/npapado/Documents/presentations/2019-04_benchmark_knn/pseudotime_fixed.png")
+# png("/path/to/pseudotime_free.png")
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.25, 0.9),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Branch assignment quality")
 box(which = "plot", lwd=2)
@@ -212,12 +212,12 @@ for (i in seq_along(methnames)) {
 free_k <- grepl("k_free", methnames)
 legend("bottom", legend=c("legacy", methtitles[free_k]), pch=21,
        pt.bg = c("black", cols[free_k]), pt.cex=1.5, ncol = 1)
-dev.off()
+# dev.off()
 
 
 
 # plot fixed pseudotime
-png("/home/npapado/Documents/presentations/2019-04_benchmark_knn/pseudotime_fixed.png")
+# png("/path/to/output/pseudotime_fixed.png")
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.4, 1.0),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Pseudotime")
 box(which = "plot", lwd=2)
@@ -240,11 +240,11 @@ for (i in seq_along(methnames)) {
 fixed <- grepl("fixed", methnames)
 legend("bottom", legend=c("legacy", methtitles[fixed]), pch=21,
        pt.bg = c("black", cols[fixed]), pt.cex=1.5, ncol=2)
-dev.off()
+# dev.off()
 
 
 # plot free pseudotime
-png("/home/npapado/Documents/presentations/2019-04_benchmark_knn/pseudotime_free.png")
+# png("/path/to/output/pseudotime_free.png")
 plot(1, type="n", xlim=c(min(bif_num), max(bif_num)), ylim=c(0.4, 1.0),
      ylab=leg_names[f], xlab="#cell fates", axes=FALSE, main="Pseudotime")
 box(which = "plot", lwd=2)
@@ -267,10 +267,11 @@ for (i in seq_along(methnames)) {
 fixed <- grepl("free", methnames)
 legend("bottom", legend=c("legacy", methtitles[fixed]), pch=21,
        pt.bg = c("black", cols[fixed]), pt.cex=1.5, ncol = 2)
-dev.off()
+# dev.off()
 
 
 
+# interactive plot
 # error_bars <- ups - downs
 # error_bars$X <- 1:10
 # melted_error <- melt(error_bars, id.vars = 1)

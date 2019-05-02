@@ -50,6 +50,7 @@ From CRAN:
 - `pdist`
 - `hashmap`
 - `reshape2`
+- `plotly`
 
 From Bioconductor:
 

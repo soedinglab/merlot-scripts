@@ -8,9 +8,9 @@ gg_color_hue <- function(n) {
   hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
-hhtree <- "~/Documents/repos/merlot-scripts"
-various <- paste(hhtree, "/scripts/various.R", sep="")
-evaluat <- paste(hhtree, "/scripts/evaluate_method.R", sep="")
+mscripts <- "/path/to/merlot-scripts"
+various <- paste(mscripts, "/scripts/various.R", sep="")
+evaluat <- paste(mscripts, "/scripts/evaluate_method.R", sep="")
 suppressPackageStartupMessages(source(various))
 suppressPackageStartupMessages(source(evaluat))
 
