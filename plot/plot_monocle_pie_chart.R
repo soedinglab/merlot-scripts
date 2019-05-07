@@ -1,3 +1,4 @@
+library(igraph)
 
 # Plotting of Monocle tree
 cell_annot <- broad_type
@@ -70,10 +71,12 @@ keep <- c(1,
           as.integer(size_length) * 0.75,
           size_length)
 
-l <- igraph::layout_as_tree(graph_yk, root = 79)
+pie_df <- data.frame(matrix(unlist(pie_values), nrow=length(pie_values), byrow=T))
+colnames(pie_df) = names(pie_values[[1]])
+l <- igraph::layout_as_tree(graph_yk, root = which.max(pie_df$`MP/EP`))
 plot(graph_yk, layout=l,
      vertex.label=nodes_labels,
-     vertex.size=nodes_sizes,
+     vertex.size=4,
      vertex.shape="pie",
      vertex.pie=pie_values,
      vertex.pie.color=list(pie_cols),
@@ -83,11 +86,11 @@ l <- legend(x=legend_position,
             col="black",
             pt.bg=pie_cols,
             pch=21)
-a <- legend(x = l$rect$left, y=l$rect$top - l$rect$h,
-            legend=sizes[keep],
-            pt.cex= keep,
-            col='black')
-x <- (a$text$x + a$rect$left) / 2
-y <- a$text$y
-graphics::symbols(x,y,circles=sizes[keep] * 5 / (200 * avg_cells_per_node) ,inches=FALSE,add=TRUE,bg='orange')
+# a <- legend(x = l$rect$left, y=l$rect$top - l$rect$h,
+#             legend=sizes[keep],
+#             pt.cex= keep,
+#             col='black')
+# x <- (a$text$x + a$rect$left) / 2
+# y <- a$text$y
+# graphics::symbols(x,y,circles=sizes[keep] * 5 / (200 * avg_cells_per_node) ,inches=FALSE,add=TRUE,bg='orange')
 

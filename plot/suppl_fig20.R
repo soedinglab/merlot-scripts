@@ -12,13 +12,16 @@ scaf <- CalculateScaffoldTree(CellCoordinates, python_location = "~/miniconda3/e
 
 elastic <- CalculateElasticTree(ScaffoldTree=scaf, N_yk=50, NBranchScaffoldNodes = 0)
 elastic <- inflate_elastic_tree(elastic, CellCoordinates)
+
+graph_yk <- get_node_graph(elastic)
+# make a tree layout
+l <- igraph::layout_as_tree(graph_yk, root = 8)
+plot_flattened_tree(elastic, cell_annot = broad_type, node_size="topology", legend_position = "topleft", layout=l)
+
+# for more plots we need the embedded tree
 FullCoords <- as.matrix(t(exprs(valid_subset_GSE72857_cds2)))
 embedded <- GenesSpaceEmbedding(FullCoords, elastic)
-pt <- CalculatePseudotimes(embedded, T0=4)
-
-plot_flattened_tree(elastic, cell_annot = broad_type, legend_position = "topleft", layout = )
-plot_flattened_tree(elastic, cell_annot = broad_type, node_size="cells", legend_position = "topleft")
-
+pt <- CalculatePseudotimes(embedded, T0=8)
 plot_flattened_tree_gene_expression(embedded, "Vwf")
 plot_flattened_tree_gene_expression(embedded, "Mpo")
 plot_flattened_tree_gene_expression(embedded, "Gata2")
